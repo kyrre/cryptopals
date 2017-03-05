@@ -87,7 +87,7 @@ bytearray slice(const bytearray &a, size_t start, size_t size) {
 vector<bytearray> chunk(const bytearray &b, const size_t chunk_size) {
 
   vector<bytearray> chunks;
-  size_t num_chunks = b.size() / chunk_size;
+  size_t num_chunks = b.size() / chunk_size + ((b.size() % chunk_size) != 0);
 
   for (size_t i = 0; i < num_chunks; ++i) {
     bytearray chunk = slice(b, i * chunk_size, chunk_size);

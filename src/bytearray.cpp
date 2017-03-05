@@ -52,11 +52,14 @@ bytearray bytearray::operator^(const BYTE b) const {
   return result;
 }
 
-void bytearray::extend(const bytearray &rhs) {
+bytearray &bytearray::extend(const bytearray &rhs) {
   bytes.reserve(bytes.size() + distance(rhs.begin(), rhs.end()));
   bytes.insert(bytes.end(), rhs.begin(), rhs.end());
+
+  return *this;
 }
 
 bool is_ascii(const bytearray &bytes) {
-  return boost::algorithm::all_of(bytes.begin(), bytes.end(), [](BYTE n) { return isprint(n); });
+  return boost::algorithm::all_of(bytes.begin(), bytes.end(),
+                                  [](BYTE n) { return isprint(n); });
 }

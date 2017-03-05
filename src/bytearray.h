@@ -73,12 +73,20 @@ public:
     return os;
   }
 
+  friend bytearray &operator+(bytearray &lhs, const bytearray &&rhs) {
+    return lhs.extend(rhs);
+  }
+
+  friend bytearray &operator+(bytearray &lhs, const bytearray &rhs) {
+    return lhs.extend(rhs);
+  }
+
   size_t size() const;
   string to_base64() const;
   void resize(size_t size) { bytes.resize(size); }
 
   void push_back(BYTE b);
-  void extend(const bytearray &rhs);
+  bytearray &extend(const bytearray &rhs);
 };
 
 bool is_ascii(const bytearray &bytes);
