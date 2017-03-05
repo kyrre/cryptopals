@@ -1,0 +1,62 @@
+cmake_minimum_required(VERSION 3.7.1)
+
+set(CMAKE_C_COMPILER "/usr/bin/clang")
+set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+
+
+# Hunter snapshot that will be used
+include("cmake/HunterGate.cmake")
+HunterGate(
+    URL
+    "https://github.com/ruslo/hunter/archive/v0.18.2.tar.gz"
+    SHA1 "3ba70e0e13bd65f80d8e984203774b0e58cbfa0f")
+
+include_directories("include")
+project(cryptopals)
+
+# Download dependencies
+hunter_add_package(Catch)
+hunter_add_package(cxxopts)
+hunter_add_package(fmt)
+hunter_add_package(Boost)
+hunter_add_package(OpenSSL)
+
+
+
+# Find dependencies
+find_package(Catch CONFIG REQUIRED)
+find_package(cxxopts CONFIG REQUIRED)
+find_package(fmt CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED)
+find_package(OpenSSL REQUIRED)
+
+# Targets
+add_executable(simple src/simple.cpp src/bytearray.cpp src/hist.cpp)
+target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto)
+
+# Tests
+add_executable(challenge1 tests/base.cpp tests/challenge1.cpp src/bytearray.cpp src/hist.cpp)
+target_link_libraries(challenge1 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
+
+add_executable(challenge2 tests/base.cpp tests/challenge2.cpp src/bytearray.cpp src/hist.cpp)
+target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
+
+
+add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
+target_link_libraries(hist PUBLIC Catch::Catch)
+
+add_executable(hamming tests/base.cpp tests/hamming.cpp src/bytearray.cpp)
+target_link_libraries(hamming PUBLIC Catch::Catch)
+
+
+# Testing
+enable_testing()
+include_directories(src)
+add_test(NAME Challenge1 COMMAND challenge1)
+add_test(NAME Challenge2 COMMAND challenge2)
+
+add_test(NAME Histogram COMMAND hist)
+add_test(NAME Hamming COMMAND hamming)
+
