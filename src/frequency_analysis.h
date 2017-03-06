@@ -84,6 +84,16 @@ bytearray slice(const bytearray &a, size_t start, size_t size) {
   return bytearray(_begin, _end);
 }
 
+bytearray nth_block(const bytearray& a, size_t block_size, size_t n) {
+  return slice(a, n * block_size, block_size);
+}
+
+bytearray first(const bytearray& a, size_t block_size) {
+  return nth_block(a, block_size, 0);
+}
+
+
+
 vector<bytearray> chunk(const bytearray &b, const size_t chunk_size) {
 
   vector<bytearray> chunks;
@@ -100,6 +110,7 @@ vector<bytearray> chunk(const bytearray &b, const size_t chunk_size) {
 
   return chunks;
 }
+
 
 auto guess_key_size(const bytearray &cipher, const size_t num_guesses) {
 

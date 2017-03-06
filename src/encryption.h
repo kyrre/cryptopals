@@ -29,24 +29,37 @@ pair<BYTE, bytearray> find_xor_encrypted_line(vector<string> lines) {
   return make_pair(minimum.key, plaintext);
 }
 
-map<size_t, size_t> count_unique_blocks(const bytearray& bytes) {
+map<size_t, size_t> count_unique_blocks(const bytearray &bytes,
+                                        const size_t block_size = 16) {
 
   boost::hash<bytearray> bytearray_hasher;
   map<size_t, size_t> blocks;
 
-  for (const auto &c : chunk(bytes, 16)) {
+  for (const auto &c : chunk(bytes, block_size)) {
 
-      assert(c.size() == 16);
-
-      size_t h = bytearray_hasher(c);
-      if (!blocks.count(h)) {
-        blocks[h] = 0;
-      }
-
-      blocks[h] += 1;
+    size_t h = bytearray_hasher(c);
+    if (!blocks.count(h)) {
+      blocks[h] = 0;
     }
 
+    blocks[h] += 1;
+  }
+
   return blocks;
+}
+
+bool duplicate_blocks(const bytearray &cipher, const size_t block_size) {
+  auto counts = count_unique_blocks(cipher, block_size);
+  bool found_duplicate = false;
+
+  for (const auto &c : counts) {
+    if (c.second > 1) {
+      found_duplicate = true;
+      continue;
+    }
+  }
+
+  return found_duplicate;
 }
 
 bytearray find_ebc_encrypted_line(const vector<string> &lines) {
@@ -70,31 +83,5 @@ bytearray find_ebc_encrypted_line(const vector<string> &lines) {
   }
 
   return hex::decode(encrypted_line);
-}
-
-
-using encryption_mode = int;
-const encryption_mode EBC = 0;
-const encryption_mode CBC = 1;
-
-
-// this is a probabilistic, but very unlikely to break!
-encryption_mode detect_encryption_mode(decltype(encryption_oracle)& blackbox) {
-
-  const bytearray chosen_plaintext(string(16 * 10, 'A'));
-  bytearray ciphertext = encryption_oracle(chosen_plaintext);
-
-  int repeated_blocks = 0;
-  for(const auto &item : count_unique_blocks(ciphertext)) {
-    if (item.second > 1)
-      repeated_blocks += item.second;
-  }
-
-  encryption_mode mode = CBC;
-  if (repeated_blocks > 2) {
-    mode = EBC;
-  }
-
-  return mode;
 }
 

@@ -2,7 +2,6 @@
 
 #include "aes.h"
 #include "bytearray.h"
-#include "encoding.h"
 #include "fs.h"
 
 TEST_CASE("Task 9") {

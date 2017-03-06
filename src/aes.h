@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cassert>
+#include <cppcodec/base64_default_rfc4648.hpp>
 #include <iostream>
 #include <openssl/aes.h>
 #include <openssl/conf.h>
@@ -8,11 +9,11 @@
 
 #include "bytearray.h"
 #include "frequency_analysis.h"
+#include "hex.h"
 
 random_device rd;
 mt19937 rng(rd());
 uniform_int_distribution<int> r_pad(5, 10);
-
 
 bytearray &pkcs_padding(bytearray &b, size_t size,
                         const BYTE pad_byte = '\x04') {
@@ -67,7 +68,6 @@ bytearray aes_ebc_encrypt(const bytearray &plaintext, const bytearray &key,
 
   bytearray cipher;
 
-
   for (auto &block : chunk(plaintext, block_size)) {
     pkcs_padding(block, block_size);
 
@@ -76,7 +76,6 @@ bytearray aes_ebc_encrypt(const bytearray &plaintext, const bytearray &key,
 
   return cipher;
 }
-
 
 bytearray aes_cbc_decrypt(const bytearray &cipher, const bytearray &key) {
   const size_t block_size = 16;
@@ -150,6 +149,22 @@ bytearray encryption_oracle(const bytearray &plaintext) {
     auto iv = random_bytes(16);
     ciphertext = aes_cbc_encrypt(pt, key, 16, iv);
   }
+
+  return ciphertext;
+}
+
+const bytearray key = random_aes_key();
+bytearray cipher_source(const bytearray &plaintext) {
+
+  bytearray padding = base64::decode(
+      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4g"
+      "YmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQg"
+      "eW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
+
+  bytearray pt = plaintext;
+  pt = pt + padding;
+
+  bytearray ciphertext = aes_ebc_encrypt(pt, key);
 
   return ciphertext;
 }

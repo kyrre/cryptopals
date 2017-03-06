@@ -26,6 +26,7 @@ public:
 
   bytearray(BYTES &&v) : bytes(v) {}
   bytearray(const size_t n) : bytes(n) {}
+  bytearray(const size_t n, const BYTE b);
 
   bytearray(const_iterator start, const_iterator end) : bytes(start, end) {}
 
