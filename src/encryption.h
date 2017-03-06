@@ -84,4 +84,3 @@ bytearray find_ebc_encrypted_line(const vector<string> &lines) {
 
   return hex::decode(encrypted_line);
 }
-

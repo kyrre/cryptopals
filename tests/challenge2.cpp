@@ -31,12 +31,10 @@ TEST_CASE("AES CBC MODE") {
   REQUIRE(aes_cbc_decrypt(ciphertext, key) == expected);
 }
 
-
 TEST_CASE("AES CBC MODE ENCRYPT/DECRYPT") {
 
   bytearray plaintext = random_bytes(500 * 16);
   bytearray key = random_aes_key();
-
 
   bytearray ciphertext = aes_cbc_encrypt(plaintext, key);
 

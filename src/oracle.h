@@ -8,12 +8,11 @@ const encryption_mode CBC = 1;
 
 // replace this with proper function type
 // instead of decltype abuse!
-bytearray blackbox(const bytearray& plaintext);
+bytearray blackbox(const bytearray &plaintext);
 using encryption_func = decltype(blackbox);
 
 // pad until next block is detected
-size_t find_padding_length(encryption_func &encrypt,
-                           size_t padding_size = 1) {
+size_t find_padding_length(encryption_func &encrypt, size_t padding_size = 1) {
   for (;; ++padding_size) {
 
     bytearray pt(string(padding_size, 'A'));

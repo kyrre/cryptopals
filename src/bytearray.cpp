@@ -12,8 +12,6 @@ bytearray::bytearray(const size_t n, const BYTE b) {
   copy(std::begin(s), std::end(s), back_inserter(bytes));
 }
 
-
-
 bytearray::bytearray(const string &s) : bytes(std::begin(s), std::end(s)) {}
 bytearray::bytearray(const BYTES &v) : bytes(std::begin(v), std::end(v)) {}
 bytearray::bytearray(bytearray &&rhs) : bytes(move(rhs.bytes)) {}
@@ -30,8 +28,6 @@ bytearray &bytearray::operator=(const string &s) {
   copy(std::begin(s), std::end(s), back_inserter(bytes));
   return *this;
 }
-
-
 
 size_t bytearray::size() const { return bytes.size(); }
 string bytearray::to_base64() const { return base64::encode(bytes); }
