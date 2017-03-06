@@ -81,7 +81,7 @@ bytearray aes_cbc_decrypt(const bytearray &cipher, const bytearray &key) {
   const size_t block_size = 16;
   bytearray plaintext;
 
-  bytearray iv(string(block_size, '\x00'));
+  bytearray iv(block_size, '\x00');
   bytearray &prev_block = iv;
   for (auto &block : chunk(cipher, block_size)) {
     pkcs_padding(block, block_size);
@@ -95,7 +95,7 @@ bytearray aes_cbc_decrypt(const bytearray &cipher, const bytearray &key) {
 
 bytearray aes_cbc_encrypt(const bytearray &plaintext, const bytearray &key,
                           const size_t block_size = 16,
-                          bytearray iv = bytearray(string(16, '\x00'))) {
+                          bytearray iv = bytearray(16, '\x00')) {
 
   assert(block_size == iv.size());
 
