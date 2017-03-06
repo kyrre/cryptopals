@@ -68,7 +68,7 @@ TEST_CASE("Task 7") {
   string expected = read("../tests/data/regression_7.txt");
 
   bytearray ciphertext =
-      read_base64("/home/kyrre/projects/cryptopals/tests/data/7.txt");
+      read_base64("../tests/data/7.txt");
 
   bytearray key("YELLOW SUBMARINE");
 
