@@ -54,3 +54,70 @@ encryption_mode detect_encryption_mode(encryption_func &blackbox) {
 
   return mode;
 }
+
+auto create_lookup_table(const bytearray &decrypted, size_t offset,
+                         size_t block_num, size_t block_size,
+                         encryption_func &blackbox) {
+
+  const size_t padding_size = block_size - offset;
+  unordered_map<bytearray, BYTE, boost::hash<bytearray>> table;
+
+  for (BYTE byte = 0; byte < 0xff; ++byte) {
+
+    bytearray plaintext(padding_size, 'A');
+    plaintext = plaintext + decrypted;
+    plaintext.push_back(byte);
+
+    bytearray cipher = blackbox(plaintext);
+    bytearray block = nth_block(cipher, block_size, block_num);
+
+    table[block] = byte;
+  }
+
+  return table;
+}
+
+BYTE byte_oracle(const bytearray &decrypted, size_t offset, size_t block_num,
+                 size_t block_size, encryption_func &blackbox) {
+
+  size_t padding_size = block_size - offset;
+
+  BYTE byte;
+  bytearray plaintext(padding_size, 'A');
+  bytearray cipher = blackbox(plaintext);
+
+  auto candidates =
+      create_lookup_table(decrypted, offset, block_num, block_size, blackbox);
+  const bytearray block = nth_block(cipher, block_size, block_num);
+
+  byte = candidates[block];
+
+  return byte;
+}
+
+bytearray &block_oracle(bytearray &decrypted, size_t block_num,
+                        size_t block_size, encryption_func &blackbox) {
+
+  for (size_t offset = 1; offset <= block_size; ++offset) {
+    BYTE byte = byte_oracle(decrypted, offset, block_num, block_size, blackbox);
+    decrypted.push_back(byte);
+  }
+
+  return decrypted;
+}
+
+bytearray decryption_oracle(encryption_func &blackbox) {
+
+  size_t block_size = find_block_size(blackbox);
+  encryption_mode mode = detect_encryption_mode(blackbox);
+
+  bytearray empty;
+  size_t num_blocks = blackbox(empty).size() / block_size;
+
+  bytearray decrypted;
+  for (size_t block_num = 0; block_num < num_blocks; ++block_num) {
+    block_oracle(decrypted, block_num, block_size, blackbox);
+  }
+
+  return decrypted;
+}

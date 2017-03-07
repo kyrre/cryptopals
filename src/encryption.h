@@ -1,6 +1,7 @@
 #pragma once
 
 #include <boost/functional/hash.hpp>
+#include <unordered_map>
 #include <vector>
 
 #include "aes.h"
@@ -29,20 +30,18 @@ pair<BYTE, bytearray> find_xor_encrypted_line(vector<string> lines) {
   return make_pair(minimum.key, plaintext);
 }
 
-map<size_t, size_t> count_unique_blocks(const bytearray &bytes,
-                                        const size_t block_size = 16) {
+auto count_unique_blocks(const bytearray &bytes, const size_t block_size = 16) {
 
-  boost::hash<bytearray> bytearray_hasher;
-  map<size_t, size_t> blocks;
+  // boost::hash<bytearray> bytearray_hasher;
+  unordered_map<bytearray, size_t, boost::hash<bytearray>> blocks;
 
   for (const auto &c : chunk(bytes, block_size)) {
 
-    size_t h = bytearray_hasher(c);
-    if (!blocks.count(h)) {
-      blocks[h] = 0;
+    if (!blocks.count(c)) {
+      blocks[c] = 0;
     }
 
-    blocks[h] += 1;
+    blocks[c] += 1;
   }
 
   return blocks;
@@ -73,7 +72,7 @@ bytearray find_ebc_encrypted_line(const vector<string> &lines) {
     if (line == "")
       continue;
 
-    map<size_t, size_t> blocks = count_unique_blocks(hex::decode(line));
+    auto blocks = count_unique_blocks(hex::decode(line));
 
     for (auto &b : blocks) {
       if (b.second != 1) {

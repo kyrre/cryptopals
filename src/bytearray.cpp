@@ -33,6 +33,9 @@ size_t bytearray::size() const { return bytes.size(); }
 string bytearray::to_base64() const { return base64::encode(bytes); }
 void bytearray::push_back(BYTE b) { bytes.push_back(b); }
 bool bytearray::operator==(const bytearray &rhs) { return bytes == rhs.bytes; }
+bool bytearray::operator==(const bytearray &rhs) const {
+  return bytes == rhs.bytes;
+}
 
 bytearray bytearray::operator^(const bytearray &rhs) const {
 

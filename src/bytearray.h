@@ -43,6 +43,8 @@ public:
 
   bytearray &operator=(const string &s);
   bool operator==(const bytearray &rhs);
+  bool operator==(const bytearray &rhs) const;
+
   bytearray operator^(const bytearray &rhs) const;
   bytearray operator^(const BYTE rhs) const;
   BYTE operator[](size_t index) const;
