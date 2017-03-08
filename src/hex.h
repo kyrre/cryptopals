@@ -2,7 +2,7 @@
 #include "bytearray.h"
 
 namespace hex {
-auto decode(const string &s) {
+auto decode(const string& s) {
   bytearray bytes;
   size_t n = s.length() - 2;
 

@@ -8,30 +8,34 @@
 using namespace std;
 
 class hist {
-private:
+ private:
   unordered_map<BYTE, double> freq;
 
-public:
+ public:
   using value_type = decltype(freq)::value_type;
   using iterator = decltype(freq)::iterator;
   using const_iterator = decltype(freq)::const_iterator;
 
-  auto begin() { return freq.begin(); }
-  auto end() { return freq.end(); }
+  auto begin() {
+    return freq.begin();
+  }
+  auto end() {
+    return freq.end();
+  }
 
   hist() {}
   hist(initializer_list<pair<BYTE const, double>> list);
-  hist(const hist &&rhs);
+  hist(const hist&& rhs);
 
-  hist &operator=(const hist &&rhs);
-  double &operator[](const BYTE byte);
+  hist& operator=(const hist&& rhs);
+  double& operator[](const BYTE byte);
   double operator[](const BYTE byte) const;
 
   // chi-square distance, would be more elegant
   // to have some vectorized operations for pow() and / !
-  friend double operator-(const hist &lhs, const hist &rhs) {
+  friend double operator-(const hist& lhs, const hist& rhs) {
     double dist = 0.0;
-    for (const auto &element : lhs.freq) {
+    for (const auto& element : lhs.freq) {
       auto ch = element.first;
       dist += pow(lhs[ch] - rhs[ch], 2.0) / (lhs[ch] + rhs[ch]);
     }

@@ -15,7 +15,8 @@ random_device rd;
 mt19937 rng(rd());
 uniform_int_distribution<int> r_pad(5, 10);
 
-bytearray &pkcs_padding(bytearray &b, size_t size,
+bytearray& pkcs_padding(bytearray& b,
+                        size_t size,
                         const BYTE pad_byte = '\x04') {
   while (b.size() < size) {
     b.push_back(pad_byte);
@@ -25,50 +26,52 @@ bytearray &pkcs_padding(bytearray &b, size_t size,
   return b;
 }
 
-bytearray aes_decrypt_block(const bytearray &block, const bytearray &key) {
-
+bytearray aes_decrypt_block(const bytearray& block, const bytearray& key) {
   const size_t block_size = 16;
   assert(block.size() == block_size);
+  size_t key_size = key.size() * 8;
 
   bytearray plaintext(block_size);
 
   AES_KEY dec_key;
-  AES_set_decrypt_key(key.const_ptr(), 128, &dec_key);
+  AES_set_decrypt_key(key.const_ptr(), key_size, &dec_key);
   AES_decrypt(block.const_ptr(), plaintext.ptr(), &dec_key);
 
   return plaintext;
 }
 
-bytearray aes_encrypt_block(const bytearray &block, const bytearray &key,
+bytearray aes_encrypt_block(const bytearray& block,
+                            const bytearray& key,
                             const size_t block_size = 16) {
-
   assert(block.size() == block_size);
+  size_t key_size = key.size() * 8;
 
   bytearray cipher(block_size);
 
   AES_KEY enc_key;
-  AES_set_encrypt_key(key.const_ptr(), 128, &enc_key);
+  AES_set_encrypt_key(key.const_ptr(), key_size, &enc_key);
   AES_encrypt(block.const_ptr(), cipher.ptr(), &enc_key);
 
   return cipher;
 }
 
-bytearray aes_ebc_decrypt(const bytearray &cipher, const bytearray &key,
+bytearray aes_ebc_decrypt(const bytearray& cipher,
+                          const bytearray& key,
                           const size_t block_size = 16) {
   bytearray plaintext;
-  for (auto &block : chunk(cipher, block_size)) {
+  for (auto& block : chunk(cipher, block_size)) {
     plaintext = plaintext + aes_decrypt_block(block, key);
   }
 
   return plaintext;
 }
 
-bytearray aes_ebc_encrypt(const bytearray &plaintext, const bytearray &key,
+bytearray aes_ebc_encrypt(const bytearray& plaintext,
+                          const bytearray& key,
                           const size_t block_size = 16) {
-
   bytearray cipher;
 
-  for (auto &block : chunk(plaintext, block_size)) {
+  for (auto& block : chunk(plaintext, block_size)) {
     pkcs_padding(block, block_size);
 
     cipher = cipher + aes_encrypt_block(block, key);
@@ -77,13 +80,13 @@ bytearray aes_ebc_encrypt(const bytearray &plaintext, const bytearray &key,
   return cipher;
 }
 
-bytearray aes_cbc_decrypt(const bytearray &cipher, const bytearray &key) {
+bytearray aes_cbc_decrypt(const bytearray& cipher, const bytearray& key) {
   const size_t block_size = 16;
   bytearray plaintext;
 
   bytearray iv(block_size, '\x00');
-  bytearray &prev_block = iv;
-  for (auto &block : chunk(cipher, block_size)) {
+  bytearray& prev_block = iv;
+  for (auto& block : chunk(cipher, block_size)) {
     pkcs_padding(block, block_size);
     plaintext = plaintext + (aes_ebc_decrypt(block, key) ^ prev_block);
 
@@ -93,15 +96,15 @@ bytearray aes_cbc_decrypt(const bytearray &cipher, const bytearray &key) {
   return plaintext;
 }
 
-bytearray aes_cbc_encrypt(const bytearray &plaintext, const bytearray &key,
+bytearray aes_cbc_encrypt(const bytearray& plaintext,
+                          const bytearray& key,
                           const size_t block_size = 16,
                           bytearray iv = bytearray(16, '\x00')) {
-
   assert(block_size == iv.size());
 
   bytearray cipher;
-  bytearray &prev_block = iv;
-  for (auto &block : chunk(plaintext, block_size)) {
+  bytearray& prev_block = iv;
+  for (auto& block : chunk(plaintext, block_size)) {
     pkcs_padding(block, block_size);
     prev_block = aes_ebc_encrypt(block ^ prev_block, key);
     cipher = cipher + prev_block;
@@ -111,7 +114,6 @@ bytearray aes_cbc_encrypt(const bytearray &plaintext, const bytearray &key,
 }
 
 bytearray random_bytes(size_t size) {
-
   bytearray bytes;
   for (size_t i = 0; i < size; ++i) {
     BYTE random_byte = rd();
@@ -121,17 +123,18 @@ bytearray random_bytes(size_t size) {
   return bytes;
 }
 
-int random_padding_size() { return r_pad(rng); }
+int random_padding_size() {
+  return r_pad(rng);
+}
 
 bytearray random_aes_key() {
-
   const size_t key_size = 16;
   bytearray key = random_bytes(key_size);
 
   return key;
 }
 
-bytearray encryption_oracle(const bytearray &plaintext) {
+bytearray encryption_oracle(const bytearray& plaintext) {
   bernoulli_distribution ebc_mode(0.5);
 
   bytearray key = random_aes_key();
@@ -154,8 +157,7 @@ bytearray encryption_oracle(const bytearray &plaintext) {
 }
 
 const bytearray key = random_aes_key();
-bytearray cipher_source(const bytearray &plaintext) {
-
+bytearray cipher_source(const bytearray& plaintext) {
   bytearray padding = base64::decode(
       "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4g"
       "YmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQg"

@@ -1,7 +1,7 @@
 #include "hist.h"
 #include <cassert>
 
-double &hist::operator[](const BYTE byte) {
+double& hist::operator[](const BYTE byte) {
   if (!freq.count(byte)) {
     freq[byte] = 0.0;
   }
@@ -20,9 +20,9 @@ double hist::operator[](const BYTE byte) const {
 }
 
 hist::hist(initializer_list<pair<BYTE const, double>> list) : freq(list) {}
-hist::hist(const hist &&rhs) : freq(move(rhs.freq)){};
+hist::hist(const hist&& rhs) : freq(move(rhs.freq)){};
 
-hist &hist::operator=(const hist &&rhs) {
+hist& hist::operator=(const hist&& rhs) {
   assert(this != &rhs);
   freq = move(rhs.freq);
 

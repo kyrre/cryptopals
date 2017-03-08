@@ -13,11 +13,10 @@
 using namespace std;
 
 pair<BYTE, bytearray> find_xor_encrypted_line(vector<string> lines) {
-
   byte_key_info minimum;
   bytearray plaintext;
 
-  for (const auto &line : lines) {
+  for (const auto& line : lines) {
     auto cipher = hex::decode(line);
     auto info = frequency_analysis(cipher);
 
@@ -30,13 +29,11 @@ pair<BYTE, bytearray> find_xor_encrypted_line(vector<string> lines) {
   return make_pair(minimum.key, plaintext);
 }
 
-auto count_unique_blocks(const bytearray &bytes, const size_t block_size = 16) {
-
+auto count_unique_blocks(const bytearray& bytes, const size_t block_size = 16) {
   // boost::hash<bytearray> bytearray_hasher;
   unordered_map<bytearray, size_t, boost::hash<bytearray>> blocks;
 
-  for (const auto &c : chunk(bytes, block_size)) {
-
+  for (const auto& c : chunk(bytes, block_size)) {
     if (!blocks.count(c)) {
       blocks[c] = 0;
     }
@@ -47,11 +44,11 @@ auto count_unique_blocks(const bytearray &bytes, const size_t block_size = 16) {
   return blocks;
 }
 
-bool duplicate_blocks(const bytearray &cipher, const size_t block_size) {
+bool duplicate_blocks(const bytearray& cipher, const size_t block_size) {
   auto counts = count_unique_blocks(cipher, block_size);
   bool found_duplicate = false;
 
-  for (const auto &c : counts) {
+  for (const auto& c : counts) {
     if (c.second > 1) {
       found_duplicate = true;
       continue;
@@ -61,20 +58,17 @@ bool duplicate_blocks(const bytearray &cipher, const size_t block_size) {
   return found_duplicate;
 }
 
-bytearray find_ebc_encrypted_line(const vector<string> &lines) {
-
-  boost::hash<bytearray> bytearray_hasher;
+bytearray find_ebc_encrypted_line(const vector<string>& lines) {
 
   string encrypted_line;
 
-  for (const string &line : lines) {
-
+  for (const string& line : lines) {
     if (line == "")
       continue;
 
     auto blocks = count_unique_blocks(hex::decode(line));
 
-    for (auto &b : blocks) {
+    for (auto& b : blocks) {
       if (b.second != 1) {
         encrypted_line = line;
       }

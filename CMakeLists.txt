@@ -22,6 +22,8 @@ hunter_add_package(cxxopts)
 hunter_add_package(fmt)
 hunter_add_package(Boost)
 hunter_add_package(OpenSSL)
+hunter_add_package(JsonSpirit)
+
 
 
 
@@ -31,10 +33,12 @@ find_package(cxxopts CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED)
 find_package(OpenSSL REQUIRED)
+find_package(JsonSpirit CONFIG REQUIRED)
+
 
 # Targets
 add_executable(simple src/simple.cpp src/bytearray.cpp src/hist.cpp)
-target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto)
+target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto json)
 
 # Tests
 add_executable(challenge1 tests/base.cpp tests/challenge1.cpp src/bytearray.cpp src/hist.cpp)

@@ -29,11 +29,11 @@ const hist en_relative_frequencies = {
     {'v', .00978}, {'k', .00772}, {'j', .00153}, {'x', .00150}, {'q', .00095},
     {'z', .00074}, {':', .05000}, {' ', .17200}, {',', .09},    {'.', .09}};
 
-auto compute_frequencies(const bytearray &plaintext) {
+auto compute_frequencies(const bytearray& plaintext) {
   hist freq;
 
   const double total = static_cast<double>(plaintext.size());
-  for (const auto &a : plaintext) {
+  for (const auto& a : plaintext) {
     freq[tolower(a)] += (1.0 / total);
   }
   return freq;
@@ -47,9 +47,9 @@ struct byte_key_info {
                 BYTE key_ = 'A')
       : dist{dist_}, key{key_} {}
 
-  byte_key_info(const byte_key_info &rhs) : dist{rhs.dist}, key{rhs.key} {}
+  byte_key_info(const byte_key_info& rhs) : dist{rhs.dist}, key{rhs.key} {}
 
-  byte_key_info &operator=(byte_key_info &&rhs) {
+  byte_key_info& operator=(byte_key_info&& rhs) {
     dist = rhs.dist;
     key = rhs.key;
 
@@ -57,11 +57,9 @@ struct byte_key_info {
   }
 };
 
-auto frequency_analysis(const bytearray &ciphertext) {
-
+auto frequency_analysis(const bytearray& ciphertext) {
   byte_key_info minimum;
   for (auto key = 0x0; key <= 0xff; ++key) {
-
     auto freq = compute_frequencies(ciphertext ^ key);
     auto dist = en_relative_frequencies - freq;
 
@@ -73,8 +71,7 @@ auto frequency_analysis(const bytearray &ciphertext) {
   return minimum;
 }
 
-bytearray slice(const bytearray &a, size_t start, size_t size) {
-
+bytearray slice(const bytearray& a, size_t start, size_t size) {
   if (start >= a.size()) {
     return bytearray();
   }
@@ -85,16 +82,15 @@ bytearray slice(const bytearray &a, size_t start, size_t size) {
   return bytearray(_begin, _end);
 }
 
-bytearray nth_block(const bytearray &a, size_t block_size, size_t n) {
+bytearray nth_block(const bytearray& a, size_t block_size, size_t n) {
   return slice(a, n * block_size, block_size);
 }
 
-bytearray first(const bytearray &a, size_t block_size) {
+bytearray first(const bytearray& a, size_t block_size) {
   return nth_block(a, block_size, 0);
 }
 
-vector<bytearray> chunk(const bytearray &b, const size_t chunk_size) {
-
+vector<bytearray> chunk(const bytearray& b, const size_t chunk_size) {
   vector<bytearray> chunks;
   size_t num_chunks = b.size() / chunk_size + ((b.size() % chunk_size) != 0);
 
@@ -110,8 +106,7 @@ vector<bytearray> chunk(const bytearray &b, const size_t chunk_size) {
   return chunks;
 }
 
-auto guess_key_size(const bytearray &cipher, const size_t num_guesses) {
-
+auto guess_key_size(const bytearray& cipher, const size_t num_guesses) {
   auto KEYSIZES = boost::irange(2, 40, 1);
 
   using ENTRY = pair<size_t, double>;
@@ -124,7 +119,6 @@ auto guess_key_size(const bytearray &cipher, const size_t num_guesses) {
   priority_queue<ENTRY, vector<ENTRY>, decltype(cmp)> distances(cmp);
 
   for (const size_t KEYSIZE : KEYSIZES) {
-
     const size_t n = 4;
     double total = 0.0;
 
@@ -151,21 +145,20 @@ auto guess_key_size(const bytearray &cipher, const size_t num_guesses) {
   return guesses;
 }
 
-bytearray break_repeatable_xor(const bytearray &cipher, const size_t size) {
-
+bytearray break_repeatable_xor(const bytearray& cipher, const size_t size) {
   auto chunks = chunk(cipher, size);
 
   vector<BYTES> blocks;
   for (size_t j = 0; j < size; ++j) {
     BYTES block;
-    for (const auto &chunk : chunks) {
+    for (const auto& chunk : chunks) {
       block.push_back(chunk[j]);
     }
     blocks.push_back(block);
   }
 
   bytearray repeating_key;
-  for (const auto &block : blocks) {
+  for (const auto& block : blocks) {
     auto decrypted = frequency_analysis(block);
     repeating_key.push_back(decrypted.key);
   }

@@ -4,7 +4,6 @@
 #include <limits>
 
 inline size_t popcount(const BYTE a, const BYTE b) {
-
   const int NUM_BITS = 8;
 
   size_t diff = 0;
@@ -17,8 +16,7 @@ inline size_t popcount(const BYTE a, const BYTE b) {
   return diff;
 }
 
-size_t hamming(const bytearray &a, const bytearray &b) {
-
+size_t hamming(const bytearray& a, const bytearray& b) {
   if (a.size() != b.size()) {
     return std::numeric_limits<BYTE>::max();
   }
