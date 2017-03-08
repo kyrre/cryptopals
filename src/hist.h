@@ -3,13 +3,13 @@
 #include "bytearray.h"
 #include <cmath>
 #include <initializer_list>
-#include <map>
+#include <unordered_map>
 
 using namespace std;
 
 class hist {
 private:
-  map<BYTE, double> freq;
+  unordered_map<BYTE, double> freq;
 
 public:
   using value_type = decltype(freq)::value_type;
