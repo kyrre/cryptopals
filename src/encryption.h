@@ -59,7 +59,6 @@ bool duplicate_blocks(const bytearray& cipher, const size_t block_size) {
 }
 
 bytearray find_ebc_encrypted_line(const vector<string>& lines) {
-
   string encrypted_line;
 
   for (const string& line : lines) {

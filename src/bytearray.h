@@ -101,7 +101,7 @@ class bytearray {
 
   string to_str() {
     string s;
-    for(const auto& byte : bytes) {
+    for (const auto& byte : bytes) {
       s += byte;
     }
 
