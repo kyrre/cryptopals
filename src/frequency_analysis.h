@@ -20,6 +20,7 @@
 #include "hamming.h"
 #include "hist.h"
 
+// this does not sum to 1
 const hist en_relative_frequencies = {
     {'e', .12702}, {'t', .0956},  {'a', .06517}, {'o', .07507}, {'i', .06966},
     {'n', .06749}, {'s', .06327}, {'h', .06094}, {'r', .05987}, {'d', .04253},
