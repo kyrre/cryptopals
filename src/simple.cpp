@@ -25,5 +25,5 @@ int main() {
     return encryption_oracle_prepad(_pt);
   };
 
-  cout << decrypt(w, 1) << endl;
+  cout << decrypt(w, 1);
 }
