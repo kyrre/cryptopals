@@ -144,3 +144,22 @@ bytearray decrypt(encryption_func blackbox, size_t start_block=0) {
 
   return decrypted;
 }
+
+
+bytearray decrypt_prepad(encryption_func oracle) {
+  const size_t block_size = find_block_size(encryption_oracle_prepad);
+  const size_t pad = block_size - find_prepad_length(encryption_oracle_prepad);
+  const size_t start_block = 1;
+
+  auto wrapper = [pad, oracle](const bytearray& pt) {
+    bytearray _pt(pad, 'A');
+    _pt = _pt + pt;
+
+    return oracle(_pt);
+  };
+
+  return decrypt(wrapper, start_block);
+}
+
+
+
