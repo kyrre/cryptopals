@@ -1,15 +1,17 @@
 #pragma once
 
+#include <functional>
 #include "bytearray.h"
+#include "encryption.h"
 
 using encryption_mode = int;
 const encryption_mode ECB = 0;
 const encryption_mode CBC = 1;
 
-// replace this with proper function type
-// instead of decltype abuse!
 bytearray blackbox(const bytearray& plaintext);
-using encryption_func = decltype(blackbox);
+//using encryption_func = decltype(blackbox);
+using encryption_func = std::function<decltype(blackbox)>;
+
 
 // pad until next block is detected
 size_t find_padding_length(encryption_func& encrypt, size_t padding_size = 1) {
@@ -28,25 +30,42 @@ size_t find_padding_length(encryption_func& encrypt, size_t padding_size = 1) {
   return padding_size;
 }
 
+size_t find_prepad_length(encryption_func func, const size_t block_size = 16) {
+  bytearray chosen_plaintext(3 * block_size, 'A');
+  bytearray chosen_block = find_duplicated_block(func(chosen_plaintext));
+
+  size_t pad = 0;
+  bool found_padding = false;
+  for (pad = 0; pad < block_size && !found_padding; ++pad) {
+    bytearray pt(block_size + pad, 'A');
+    auto cipher = func(pt);
+    auto blocks = chunk(cipher, block_size);
+
+    for (const auto& block : blocks) {
+      if (block == chosen_block) {
+        found_padding = true;
+        break;
+      }
+    }
+  }
+
+  return max((block_size - pad + 1UL), 0UL);
+}
+
 /* pad until new block then pad again from new block to find block size. */
-size_t find_block_size(encryption_func& encrypt) {
+size_t find_block_size(encryption_func encrypt) {
   size_t padding = find_padding_length(encrypt);
   return find_padding_length(encrypt, padding + 1) - padding;
 }
 
-// this is a probabilistic, but very unlikely to break!
-encryption_mode detect_encryption_mode(encryption_func& blackbox) {
-  const bytearray chosen_plaintext(string(16 * 100, 'A'));
-  bytearray ciphertext = blackbox(chosen_plaintext);
-
-  int repeated_blocks = 0;
-  for (const auto& item : count_unique_blocks(ciphertext)) {
-    if (item.second > 2)
-      repeated_blocks += item.second;
-  }
+// this is a probabilistic test, but very unlikely to break!
+encryption_mode detect_encryption_mode(encryption_func blackbox,
+                                       const size_t block_size = 16) {
+  const bytearray chosen_plaintext(block_size * 100, 'A');
+  bytearray cipher = blackbox(chosen_plaintext);
 
   encryption_mode mode = CBC;
-  if (repeated_blocks > 2) {
+  if (duplicate_blocks(cipher, block_size)) {
     mode = ECB;
   }
 
@@ -57,7 +76,7 @@ auto create_lookup_table(const bytearray& decrypted,
                          size_t offset,
                          size_t block_num,
                          size_t block_size,
-                         encryption_func& blackbox) {
+                         encryption_func blackbox) {
   const size_t padding_size = block_size - offset;
   unordered_map<bytearray, BYTE, boost::hash<bytearray>> table;
 
@@ -75,11 +94,11 @@ auto create_lookup_table(const bytearray& decrypted,
   return table;
 }
 
-BYTE byte_oracle(const bytearray& decrypted,
-                 size_t offset,
-                 size_t block_num,
-                 size_t block_size,
-                 encryption_func& blackbox) {
+BYTE decrypt_byte(const bytearray& decrypted,
+                  size_t offset,
+                  size_t block_num,
+                  size_t block_size,
+                  encryption_func blackbox) {
   size_t padding_size = block_size - offset;
 
   BYTE byte;
@@ -95,19 +114,20 @@ BYTE byte_oracle(const bytearray& decrypted,
   return byte;
 }
 
-bytearray& block_oracle(bytearray& decrypted,
-                        size_t block_num,
-                        size_t block_size,
-                        encryption_func& blackbox) {
+bytearray& decrypt_block(bytearray& decrypted,
+                         size_t block_num,
+                         size_t block_size,
+                         encryption_func blackbox) {
   for (size_t offset = 1; offset <= block_size; ++offset) {
-    BYTE byte = byte_oracle(decrypted, offset, block_num, block_size, blackbox);
+    BYTE byte =
+        decrypt_byte(decrypted, offset, block_num, block_size, blackbox);
     decrypted.push_back(byte);
   }
 
   return decrypted;
 }
 
-bytearray decryption_oracle(encryption_func& blackbox) {
+bytearray decrypt(encryption_func blackbox, size_t start_block=0) {
   size_t block_size = find_block_size(blackbox);
   encryption_mode mode = detect_encryption_mode(blackbox);
 
@@ -118,8 +138,8 @@ bytearray decryption_oracle(encryption_func& blackbox) {
   size_t num_blocks = blackbox(empty).size() / block_size;
 
   bytearray decrypted;
-  for (size_t block_num = 0; block_num < num_blocks; ++block_num) {
-    block_oracle(decrypted, block_num, block_size, blackbox);
+  for (size_t block_num = start_block; block_num < num_blocks; ++block_num) {
+    decrypt_block(decrypted, block_num, block_size, blackbox);
   }
 
   return decrypted;

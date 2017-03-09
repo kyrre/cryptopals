@@ -11,6 +11,8 @@
 #include "frequency_analysis.h"
 #include "hex.h"
 
+using namespace std;
+
 random_device rd;
 mt19937 rng(rd());
 uniform_int_distribution<int> r_pad(5, 10);
@@ -165,6 +167,22 @@ bytearray cipher_source(const bytearray& plaintext) {
 
   bytearray pt = plaintext;
   pt = pt + padding;
+
+  bytearray ciphertext = aes_ebc_encrypt(pt, key);
+
+  return ciphertext;
+}
+
+const bytearray random_pre_padding = random_bytes(random_padding_size());
+
+bytearray encryption_oracle_prepad(const bytearray& plaintext) {
+  bytearray target_bytes = base64::decode(
+      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4g"
+      "YmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQg"
+      "eW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
+
+  bytearray pt = random_pre_padding;
+  pt = pt + plaintext + target_bytes;
 
   bytearray ciphertext = aes_ebc_encrypt(pt, key);
 

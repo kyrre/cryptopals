@@ -2,6 +2,7 @@
 
 #include <boost/functional/hash.hpp>
 #include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include "aes.h"
@@ -30,7 +31,6 @@ pair<BYTE, bytearray> find_xor_encrypted_line(vector<string> lines) {
 }
 
 auto count_unique_blocks(const bytearray& bytes, const size_t block_size = 16) {
-  // boost::hash<bytearray> bytearray_hasher;
   unordered_map<bytearray, size_t, boost::hash<bytearray>> blocks;
 
   for (const auto& c : chunk(bytes, block_size)) {
@@ -75,4 +75,34 @@ bytearray find_ebc_encrypted_line(const vector<string>& lines) {
   }
 
   return hex::decode(encrypted_line);
+}
+
+auto find_duplicated_blocks(const bytearray& bytes,
+                            const size_t block_size = 16) {
+  auto counts = count_unique_blocks(bytes, block_size);
+  unordered_set<bytearray, boost::hash<bytearray>> duplicates;
+
+  for (const auto& c : counts) {
+    if (c.second > 1) {
+      duplicates.insert(c.first);
+    }
+  }
+
+  return duplicates;
+}
+
+bytearray find_duplicated_block(const bytearray& bytes,
+                                const size_t block_size = 16) {
+  unordered_map<bytearray, size_t, boost::hash<bytearray>> blocks;
+  unordered_set<bytearray, boost::hash<bytearray>> duplicates;
+
+  for (const auto& c : chunk(bytes, block_size)) {
+    if (!blocks.count(c)) {
+      blocks[c] = 0;
+    } else {
+      return c;
+    }
+
+    blocks[c] += 1;
+  }
 }

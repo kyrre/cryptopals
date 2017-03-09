@@ -53,7 +53,6 @@ Profile decrypt_profile(const bytearray& cipher, const bytearray& key) {
 bytearray create_block(const bytearray& key,
                        const string& role = "admin",
                        size_t block_size = 16) {
-
   assert(role.size() <= block_size);
 
   // create [email=\x04..., {role}\x04] blocks
