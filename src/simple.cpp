@@ -2,13 +2,11 @@
 #include <iostream>
 #include <unordered_map>
 
-#include "aes.h"
-#include "oracle.h"
+#include "analysis/aes.h"
+#include "oracle/aes.h"
 
 using namespace std;
 
-
 int main() {
-
-  cout << decrypt_prepad(encryption_oracle_prepad) << endl;
+  cout << aes::decrypt(oracle::aes::encryption_oracle);
 }

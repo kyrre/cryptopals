@@ -4,7 +4,6 @@
 #include "hamming.h"
 
 TEST_CASE("Hamming") {
-
   bytearray a("this is a test");
   bytearray b("wokka wokka!!!");
 

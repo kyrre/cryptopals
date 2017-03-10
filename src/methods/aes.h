@@ -8,25 +8,10 @@
 #include <random>
 
 #include "bytearray.h"
-#include "frequency_analysis.h"
-#include "hex.h"
+#include "padding.h"
+#include "utils.h"
 
 using namespace std;
-
-random_device rd;
-mt19937 rng(rd());
-uniform_int_distribution<int> r_pad(5, 10);
-
-bytearray& pkcs_padding(bytearray& b,
-                        size_t size,
-                        const BYTE pad_byte = '\x04') {
-  while (b.size() < size) {
-    b.push_back(pad_byte);
-  }
-
-  assert(b.size() == size);
-  return b;
-}
 
 bytearray aes_decrypt_block(const bytearray& block, const bytearray& key) {
   const size_t block_size = 16;
@@ -113,78 +98,4 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
   }
 
   return cipher;
-}
-
-bytearray random_bytes(size_t size) {
-  bytearray bytes;
-  for (size_t i = 0; i < size; ++i) {
-    BYTE random_byte = rd();
-    bytes.push_back(random_byte);
-  }
-
-  return bytes;
-}
-
-int random_padding_size() {
-  return r_pad(rng);
-}
-
-bytearray random_aes_key() {
-  const size_t key_size = 16;
-  bytearray key = random_bytes(key_size);
-
-  return key;
-}
-
-bytearray encryption_oracle(const bytearray& plaintext) {
-  bernoulli_distribution ebc_mode(0.5);
-
-  bytearray key = random_aes_key();
-
-  size_t pre_padding = random_padding_size();
-  size_t post_padding = random_padding_size();
-
-  bytearray pt = random_bytes(pre_padding);
-  pt = pt + plaintext + random_bytes(post_padding);
-
-  bytearray ciphertext;
-  if (ebc_mode(rng)) {
-    ciphertext = aes_ebc_encrypt(pt, key);
-  } else {
-    auto iv = random_bytes(16);
-    ciphertext = aes_cbc_encrypt(pt, key, 16, iv);
-  }
-
-  return ciphertext;
-}
-
-const bytearray key = random_aes_key();
-bytearray cipher_source(const bytearray& plaintext) {
-  bytearray padding = base64::decode(
-      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4g"
-      "YmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQg"
-      "eW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
-
-  bytearray pt = plaintext;
-  pt = pt + padding;
-
-  bytearray ciphertext = aes_ebc_encrypt(pt, key);
-
-  return ciphertext;
-}
-
-const bytearray random_pre_padding = random_bytes(random_padding_size());
-
-bytearray encryption_oracle_prepad(const bytearray& plaintext) {
-  bytearray target_bytes = base64::decode(
-      "Um9sbGluJyBpbiBteSA1LjAKV2l0aCBteSByYWctdG9wIGRvd24gc28gbXkgaGFpciBjYW4g"
-      "YmxvdwpUaGUgZ2lybGllcyBvbiBzdGFuZGJ5IHdhdmluZyBqdXN0IHRvIHNheSBoaQpEaWQg"
-      "eW91IHN0b3A/IE5vLCBJIGp1c3QgZHJvdmUgYnkK");
-
-  bytearray pt = random_pre_padding;
-  pt = pt + plaintext + target_bytes;
-
-  bytearray ciphertext = aes_ebc_encrypt(pt, key);
-
-  return ciphertext;
 }
