@@ -1,10 +1,10 @@
 #pragma once
 
+#include <functional>
 #include "analysis/aes.h"
 #include "bytearray.h"
 #include "methods/aes.h"
 #include "utils.h"
-#include <functional>
 
 namespace oracle {
 namespace aes {

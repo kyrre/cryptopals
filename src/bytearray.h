@@ -38,9 +38,29 @@ class bytearray {
   iterator begin() {
     return bytes.begin();
   }
+
   iterator end() {
     return bytes.end();
   }
+
+  auto rbegin() {
+    return bytes.rbegin();
+  }
+
+  auto rend() const {
+    return bytes.crend();
+  }
+
+  auto rbegin() const {
+    return bytes.crbegin();
+  }
+
+  auto rend() {
+    return bytes.rend();
+  }
+
+
+
 
   const_iterator begin() const {
     return bytes.begin();

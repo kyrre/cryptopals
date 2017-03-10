@@ -3,16 +3,14 @@
 #include <unordered_map>
 #include <vector>
 
-#include "aes.h"
+#include "methods/aes.h"
 #include "bytearray.h"
 #include "utils.h"
 
-namespace ECB {
+namespace oracle {
+namespace aes {
 
-using std::vector;
-using std::unordered_map;
-using std::tie;
-using std::tie;
+using namespace std;
 
 using keyvalue = unordered_map<string, string>;
 const bytearray rkey = random_aes_key();
@@ -55,19 +53,22 @@ bytearray create_block(const bytearray& key,
                        size_t block_size = 16) {
   assert(role.size() <= block_size);
 
-  // create [email=\x04..., {role}\x04] blocks
-  size_t pad_size = block_size - strlen("email=");
-  string input = string(pad_size, '\x04') + role +
-                 string(block_size - role.size(), '\x04');
+  // create [email=padpad..., {role}padpad] blocks
+  size_t email_pad_size = block_size - strlen("email=");
+  size_t role_pad_size = block_size - role.size();
+
+  string input = string(email_pad_size, email_pad_size)+ role +
+                 string(role_pad_size, role_pad_size);
   bytearray cipher = encrypt_profile(key, profile_for(input));
 
   return nth_block(cipher, block_size, 1);
 }
 
-Profile change_profile_role(const bytearray& key,
-                            const string& email = "foo@bar",
+Profile change_profile_role(const string& email = "foo@bar",
                             const string& role = "admin",
                             size_t block_size = 16) {
+
+  auto key = rkey;
   const int field_size = 13;
   const int email_size = static_cast<int>(email.size());
   const int padding_size = max(field_size - email_size, 0);
@@ -81,5 +82,6 @@ Profile change_profile_role(const bytearray& key,
 
   modified = modified + create_block(key, role);
   return decrypt_profile(modified, key);
+}
 }
 }
