@@ -67,11 +67,12 @@ bytearray aes_ebc_encrypt(const bytearray& plaintext,
   return cipher;
 }
 
-bytearray aes_cbc_decrypt(const bytearray& cipher, const bytearray& key) {
-  const size_t block_size = 16;
+bytearray aes_cbc_decrypt(const bytearray& cipher, const bytearray& key,
+    const size_t block_size = 16,
+    bytearray iv = bytearray(16, '\x00')) {
+
   bytearray plaintext;
 
-  bytearray iv(block_size, '\x00');
   bytearray& prev_block = iv;
   for (auto& block : chunk(cipher, block_size)) {
     pkcs_padding(block, block_size);

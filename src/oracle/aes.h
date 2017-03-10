@@ -34,8 +34,7 @@ int random_padding_size() {
   return r_pad(rng);
 }
 
-bytearray random_aes_key() {
-  const size_t key_size = 16;
+bytearray random_aes_key(const size_t key_size = 16) {
   bytearray key = random_bytes(key_size);
 
   return key;
@@ -94,5 +93,42 @@ bytearray encryption_oracle_prepad(const bytearray& plaintext) {
 
   return ciphertext;
 }
+
+bytearray encryption_oracle_cbc(const string& chosen_plaintext) {
+
+  const vector<string> meta_characters = {"=", ";"};
+
+  const string pre = "comment1=cooking%20MCs;userdata=";
+  const string post =";comment2=%20like%20a%20pound%20of%20bacon";
+
+  string plaintext = pre + chosen_plaintext + post;
+
+  for (const auto& meta : meta_characters) {
+    boost::replace_all(plaintext, meta, "\"" + meta + "\"");
+  }
+
+  auto cipher = aes_cbc_encrypt(plaintext, key);
+  return cipher;
 }
+
+bool decrypt_oracle_cbc(const bytearray& cipher) {
+  string plaintext = aes_cbc_decrypt(cipher, key).to_str();
+  bool found = plaintext.find(";admin=true;") != string::npos;
+  return found;
 }
+
+bytearray bit_flipping_cbc(const string& wanted = ";admin=true;") {
+
+  assert(wanted.size() <= 16);
+
+  const size_t padding = 22;
+  const string plaintext = string(padding, ' ');
+
+  bytearray cipher = encryption_oracle_cbc(plaintext);
+  for (size_t i = 0; i < wanted.size(); ++i) {
+    cipher[32+i] ^= plaintext[i] ^ wanted[i];
+  }
+
+  return cipher;
+}
+}}

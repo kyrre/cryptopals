@@ -28,16 +28,22 @@ TEST_CASE("AES CBC MODE") {
   bytearray ciphertext = read_base64("../tests/data/10.txt");
   bytearray key("YELLOW SUBMARINE");
 
+
   REQUIRE(aes_cbc_decrypt(ciphertext, key) == expected);
 }
 
 TEST_CASE("AES CBC MODE ENCRYPT/DECRYPT") {
-  bytearray plaintext = oracle::aes::random_bytes(500 * 16);
+
+  const size_t block_size = 16;
+  bytearray plaintext = oracle::aes::random_bytes(77);
   bytearray key = oracle::aes::random_aes_key();
+  bytearray iv = oracle::aes::random_bytes(block_size);
 
-  bytearray ciphertext = aes_cbc_encrypt(plaintext, key);
 
-  REQUIRE(aes_cbc_decrypt(ciphertext, key) == plaintext);
+  bytearray ciphertext = aes_cbc_encrypt(plaintext, key, block_size, iv);
+  bytearray pt = aes_cbc_decrypt(ciphertext, key, block_size, iv);
+
+  REQUIRE(strip_pkcs_padding(pt) == plaintext);
 }
 
 TEST_CASE("Byte-at-a-time ECB (Simple)") {
@@ -75,4 +81,10 @@ TEST_CASE("Strip Padding") {
   REQUIRE(strip_pkcs_padding(one) == expected);
   REQUIRE(strip_pkcs_padding(two) == expected);
 
+}
+
+TEST_CASE("Bit Flipping CBC") {
+  using namespace oracle::aes;
+  auto cipher = bit_flipping_cbc();
+  REQUIRE(decrypt_oracle_cbc(cipher) == true);
 }

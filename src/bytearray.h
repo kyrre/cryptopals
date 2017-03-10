@@ -76,6 +76,9 @@ class bytearray {
   bytearray operator^(const bytearray& rhs) const;
   bytearray operator^(const BYTE rhs) const;
   BYTE operator[](size_t index) const;
+  BYTE& operator[](size_t index) {
+    return bytes[index];
+  }
 
   unsigned char* ptr() {
     return static_cast<unsigned char*>(&bytes[0]);
@@ -121,9 +124,7 @@ class bytearray {
 
   string to_str() {
     string s;
-    for (const auto& byte : bytes) {
-      s += byte;
-    }
+    copy(bytes.begin(), bytes.end(), back_inserter(s));
 
     return s;
   }

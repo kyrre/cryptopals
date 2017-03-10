@@ -61,7 +61,8 @@ bytearray create_block(const bytearray& key,
                  string(role_pad_size, role_pad_size);
   bytearray cipher = encrypt_profile(key, profile_for(input));
 
-  return nth_block(cipher, block_size, 1);
+  const size_t block_num = 1;
+  return nth_block(cipher, block_size, block_num);
 }
 
 Profile change_profile_role(const string& email = "foo@bar",
@@ -73,7 +74,7 @@ Profile change_profile_role(const string& email = "foo@bar",
   const int email_size = static_cast<int>(email.size());
   const int padding_size = max(field_size - email_size, 0);
 
-  string input = email + string(padding_size, '\x00');
+  string input = email + string(padding_size, padding_size);
   input = input.substr(0, field_size);
 
   // swap last block with the custom 'role' block
