@@ -47,3 +47,15 @@ bytearray strip_pkcs_padding(const bytearray& b) {
 
   return stripped;
 }
+
+bool valid_padding(const bytearray& b) {
+
+  bool valid = true;;
+  try {
+    strip_pkcs_padding(b);
+  } catch (overflow_error e) {
+    valid = false;
+  }
+
+  return valid;
+}
