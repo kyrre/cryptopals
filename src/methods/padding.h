@@ -1,28 +1,44 @@
 #pragma once
 
+
+#include <iostream>
 #include <unordered_set>
 #include "bytearray.h"
 
-bytearray& pkcs_padding(bytearray& b, size_t block_size) {
-  size_t pad_num = max(0UL, block_size - b.size());
+bytearray pkcs(const bytearray& b, size_t block_size=16) {
 
-  for (size_t i = 0; i < pad_num; ++i) {
-    b.push_back(pad_num);
+  bytearray padded(b);
+  size_t pt_size = b.size();
+  size_t num_pad = block_size - pt_size % block_size;
+
+  for(size_t i = 0; i < num_pad; ++i) {
+    padded.push_back(num_pad);
   }
 
-  return b;
+  return padded;
 }
 
 
-bytearray strip_pkcs_padding(const bytearray& b) {
+
+bytearray strip_pkcs(const bytearray& b) {
 
   bool valid = true;
   unordered_set<BYTE> padding_bytes;
   size_t padding_count = 0;
+  size_t last_byte_found = - 1;
   decltype(b.rbegin()) rit;
   for(rit = b.rbegin(); rit != b.rend(); ++rit ) {
     auto byte = *rit;
     if (byte >= 0x1 && byte <= 0xf) {
+      
+      if (last_byte_found == -1) {
+        last_byte_found = byte;
+      }
+
+      if (last_byte_found != byte) {
+        break;
+      }
+      
       padding_bytes.insert(byte);
       ++padding_count;
     } else {
@@ -52,7 +68,7 @@ bool valid_padding(const bytearray& b) {
 
   bool valid = true;;
   try {
-    strip_pkcs_padding(b);
+    strip_pkcs(b);
   } catch (overflow_error e) {
     valid = false;
   }

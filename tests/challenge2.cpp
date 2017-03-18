@@ -1,26 +1,31 @@
 #include <catch.hpp>
 
 #include "bytearray.h"
-#include "fs.h"
-#include "methods/aes.h"
-#include "utils.h"
 
+#include "methods/padding.h"
+#include "methods/aes.h"
 #include "oracle/aes.h"
 #include "oracle/profile.h"
+
+#include "fs.h"
+#include "utils.h"
 
 
 TEST_CASE("Task 9") {
   bytearray bytes("YELLOW SUBMARINE");
   bytearray expected("YELLOW SUBMARINE\x04\x04\x04\x04");
 
-  REQUIRE(pkcs_padding(bytes, 20) == expected);
+  REQUIRE(pkcs(bytes, 20) == expected);
 }
 
 TEST_CASE("AES Encrypt/Decrypt") {
   bytearray ciphertext = read_base64("../tests/data/7.txt");
 
   bytearray key("YELLOW SUBMARINE");
-  REQUIRE(aes_ebc_encrypt(aes_ebc_decrypt(ciphertext, key), key) == ciphertext);
+  bytearray plaintext = aes_ebc_decrypt(ciphertext, key);
+  bytearray ct = aes_ebc_encrypt(strip_pkcs(plaintext), key);
+
+  REQUIRE(ct == ciphertext);
 }
 
 TEST_CASE("AES CBC MODE") {
@@ -28,22 +33,20 @@ TEST_CASE("AES CBC MODE") {
   bytearray ciphertext = read_base64("../tests/data/10.txt");
   bytearray key("YELLOW SUBMARINE");
 
-
-  REQUIRE(aes_cbc_decrypt(ciphertext, key) == expected);
+  REQUIRE(strip_pkcs(aes_cbc_decrypt(ciphertext, key)) == expected);
 }
 
 TEST_CASE("AES CBC MODE ENCRYPT/DECRYPT") {
 
   const size_t block_size = 16;
-  bytearray plaintext = oracle::aes::random_bytes(77);
+  bytearray plaintext = oracle::aes::random_bytes(7);
   bytearray key = oracle::aes::random_aes_key();
   bytearray iv = oracle::aes::random_bytes(block_size);
-
 
   bytearray ciphertext = aes_cbc_encrypt(plaintext, key, block_size, iv);
   bytearray pt = aes_cbc_decrypt(ciphertext, key, block_size, iv);
 
-  REQUIRE(strip_pkcs_padding(pt) == plaintext);
+  REQUIRE(strip_pkcs(pt) == plaintext);
 }
 
 TEST_CASE("Byte-at-a-time ECB (Simple)") {
@@ -58,7 +61,7 @@ TEST_CASE("Byte-at-a-time ECB (Harder)") {
   using namespace oracle::aes;
   string s = read("../tests/data/regression_14.txt");
 
-  REQUIRE(aes::decrypt_prepad(encryption_oracle_prepad) == s);
+  REQUIRE(strip_pkcs(aes::decrypt_prepad(encryption_oracle_prepad)) == s);
 }
 
 
@@ -68,7 +71,7 @@ TEST_CASE("Profile") {
   Profile p = change_profile_role("foo@bar", "admin");
   string expected = "admin";
 
-  REQUIRE(strip_pkcs_padding(p.role) == expected);
+  REQUIRE(strip_pkcs(p.role) == expected);
 
 }
 
@@ -78,8 +81,8 @@ TEST_CASE("Strip Padding") {
   bytearray two("ICE ICE BABY");
   string expected = "ICE ICE BABY";
 
-  REQUIRE(strip_pkcs_padding(one) == expected);
-  REQUIRE(strip_pkcs_padding(two) == expected);
+  REQUIRE(strip_pkcs(one) == expected);
+  REQUIRE(strip_pkcs(two) == expected);
 
 }
 

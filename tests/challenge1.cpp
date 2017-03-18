@@ -72,7 +72,7 @@ TEST_CASE("Task 7") {
 
   bytearray key("YELLOW SUBMARINE");
 
-  REQUIRE(aes_ebc_decrypt(ciphertext, key) == expected);
+  REQUIRE(strip_pkcs(aes_ebc_decrypt(ciphertext, key)) == expected);
 }
 
 TEST_CASE("Task 8") {

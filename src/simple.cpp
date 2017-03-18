@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <random>
 
+#include "fs.h"
 #include "analysis/aes.h"
 #include "methods/padding.h"
 #include "methods/aes.h"
@@ -47,7 +48,6 @@ bytearray encrypt_random_line() {
 int main() {
 
 
-
 	const bytearray c = encrypt_random_line();
 
 	bytearray d;
@@ -64,14 +64,14 @@ int main() {
 				cipher[16 - j - 1] ^= d[j] ^ pad;
 			}
 
-			cout << j << endl;
 			cipher[16 - j - 1] ^= z ^ pad;
 
 			auto pt = aes_cbc_decrypt(cipher, _key);
 			bool valid = valid_padding(slice(pt, 16, 16));
 
-			cout << slice(pt, 16, 16) << endl;
+			//cout << slice(pt, 16, 16) << endl;
 			if (valid) {
+			  cout << "VALID z=" << static_cast<int>(z) << endl;
 				d.push_back(z);
 				break;
 			}

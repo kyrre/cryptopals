@@ -20,6 +20,7 @@ const encryption_mode CBC = 1;
 bytearray oracle_func(const bytearray& plaintext);
 using encryption_func = std::function<decltype(oracle_func)>;
 
+
 bytearray random_bytes(size_t size) {
   bytearray bytes;
   for (size_t i = 0; i < size; ++i) {
@@ -29,6 +30,8 @@ bytearray random_bytes(size_t size) {
 
   return bytes;
 }
+
+
 
 int random_padding_size() {
   return r_pad(rng);

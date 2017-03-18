@@ -57,9 +57,7 @@ bytearray aes_ebc_encrypt(const bytearray& plaintext,
                           const bytearray& key,
                           const size_t block_size = 16) {
   bytearray cipher;
-
-  for (auto& block : chunk(plaintext, block_size)) {
-    pkcs_padding(block, block_size);
+  for (auto& block : chunk(pkcs(plaintext), block_size)) {
 
     cipher = cipher + aes_encrypt_block(block, key);
   }
@@ -75,8 +73,7 @@ bytearray aes_cbc_decrypt(const bytearray& cipher, const bytearray& key,
 
   bytearray& prev_block = iv;
   for (auto& block : chunk(cipher, block_size)) {
-    pkcs_padding(block, block_size);
-    plaintext = plaintext + (aes_ebc_decrypt(block, key) ^ prev_block);
+    plaintext = plaintext + (aes_decrypt_block(block, key) ^ prev_block);
 
     prev_block = block;
   }
@@ -92,9 +89,8 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
 
   bytearray cipher;
   bytearray& prev_block = iv;
-  for (auto& block : chunk(plaintext, block_size)) {
-    pkcs_padding(block, block_size);
-    prev_block = aes_ebc_encrypt(block ^ prev_block, key);
+  for (auto& block : chunk(pkcs(plaintext), block_size)) {
+    prev_block = aes_encrypt_block(block ^ prev_block, key);
     cipher = cipher + prev_block;
   }
 
