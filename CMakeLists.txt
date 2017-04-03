@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.7.1)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-gnu")
 
 
 # Hunter snapshot that will be used
@@ -13,7 +13,8 @@ HunterGate(
     "https://github.com/ruslo/hunter/archive/v0.18.2.tar.gz"
     SHA1 "3ba70e0e13bd65f80d8e984203774b0e58cbfa0f")
 
-include_directories("include")
+# ignore warnings from
+include_directories(SYSTEM "include")
 project(cryptopals)
 
 # Download dependencies
@@ -37,6 +38,10 @@ find_package(JsonSpirit CONFIG REQUIRED)
 set(BYTE
   src/bytearray.cpp
   src/utils.cpp
+  src/analysis/aes.cpp
+  src/hex.cpp
+  src/fs.cpp
+  src/hamming.cpp
 )
 
 set(AES
@@ -59,7 +64,7 @@ target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
 target_link_libraries(hist PUBLIC Catch::Catch)
 #
-add_executable(hamming tests/base.cpp tests/hamming.cpp src/bytearray.cpp)
+add_executable(hamming tests/base.cpp tests/hamming.cpp ${BYTE})
 target_link_libraries(hamming PUBLIC Catch::Catch)
 
 

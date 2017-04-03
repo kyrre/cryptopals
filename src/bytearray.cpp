@@ -1,6 +1,6 @@
 #include <algorithm>
+#include <assert.h>
 #include <boost/algorithm/cxx11/all_of.hpp>
-#include <cassert>
 #include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "bytearray.h"

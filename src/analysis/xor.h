@@ -2,6 +2,7 @@
 
 #include "analysis/frequency.h"
 #include "bytearray.h"
+#include "hex.h"
 
 using std::pair;
 using std::vector;

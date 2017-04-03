@@ -11,7 +11,6 @@
 using namespace std;
 using block_counter = unordered_map<bytearray, size_t, boost::hash<bytearray>>;
 
-
 vector<string> split(const string& s, const string& sep);
 
 pair<string, string> key_value(const string& s);

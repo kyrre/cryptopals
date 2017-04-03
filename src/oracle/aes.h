@@ -1,8 +1,8 @@
 #pragma once
 
+#include <cppcodec/base64_default_rfc4648.hpp>
 #include <functional>
 #include <random>
-#include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "analysis/aes.h"
 #include "bytearray.h"
@@ -23,7 +23,6 @@ const encryption_mode CBC = 1;
 bytearray oracle_func(const bytearray& plaintext);
 using encryption_func = std::function<decltype(oracle_func)>;
 
-
 bytearray random_bytes(size_t size) {
   bytearray bytes;
   for (size_t i = 0; i < size; ++i) {
@@ -33,8 +32,6 @@ bytearray random_bytes(size_t size) {
 
   return bytes;
 }
-
-
 
 int random_padding_size() {
   return r_pad(rng);
@@ -101,11 +98,10 @@ bytearray encryption_oracle_prepad(const bytearray& plaintext) {
 }
 
 bytearray encryption_oracle_cbc(const string& chosen_plaintext) {
-
   const vector<string> meta_characters = {"=", ";"};
 
   const string pre = "comment1=cooking%20MCs;userdata=";
-  const string post =";comment2=%20like%20a%20pound%20of%20bacon";
+  const string post = ";comment2=%20like%20a%20pound%20of%20bacon";
 
   string plaintext = pre + chosen_plaintext + post;
 
@@ -124,7 +120,6 @@ bool decrypt_oracle_cbc(const bytearray& cipher) {
 }
 
 bytearray bit_flipping_cbc(const string& wanted = ";admin=true;") {
-
   assert(wanted.size() <= 16);
 
   const size_t padding = 22;
@@ -132,9 +127,10 @@ bytearray bit_flipping_cbc(const string& wanted = ";admin=true;") {
 
   bytearray cipher = encryption_oracle_cbc(plaintext);
   for (size_t i = 0; i < wanted.size(); ++i) {
-    cipher[32+i] ^= plaintext[i] ^ wanted[i];
+    cipher[32 + i] ^= plaintext[i] ^ wanted[i];
   }
 
   return cipher;
 }
-}}
+}
+}

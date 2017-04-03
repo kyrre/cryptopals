@@ -1,9 +1,9 @@
 #include <cassert>
+#include <cppcodec/base64_default_rfc4648.hpp>
 #include <iostream>
 #include <openssl/aes.h>
 #include <openssl/conf.h>
 #include <random>
-#include <cppcodec/base64_default_rfc4648.hpp>
 
 #include "bytearray.h"
 #include "methods/aes.h"

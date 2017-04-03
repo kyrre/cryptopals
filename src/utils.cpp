@@ -8,7 +8,6 @@
 #include "utils.h"
 
 using namespace std;
-using block_counter = unordered_map<bytearray, size_t, boost::hash<bytearray>>;
 
 vector<string> split(const string& s, const string& sep) {
   vector<string> lines;
@@ -99,8 +98,7 @@ bool duplicate_blocks(const bytearray& cipher, const size_t block_size) {
   return found_duplicate;
 }
 
-auto find_duplicated_blocks(const bytearray& bytes,
-                            const size_t block_size) {
+auto find_duplicated_blocks(const bytearray& bytes, const size_t block_size) {
   block_counter counts = unique_block_counts(bytes, block_size);
   unordered_set<bytearray, boost::hash<bytearray>> duplicates;
 

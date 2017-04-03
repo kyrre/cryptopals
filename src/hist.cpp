@@ -1,5 +1,5 @@
 #include "hist.h"
-#include <cassert>
+#include <assert.h>
 
 double& hist::operator[](const BYTE byte) {
   if (!freq.count(byte)) {

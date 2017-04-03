@@ -1,7 +1,7 @@
 #include "oracle/aes.h"
 
 namespace oracle {
-namespace aes  {
+namespace aes {
 
 bytearray random_bytes(size_t size) {
   bytearray bytes;
@@ -12,5 +12,5 @@ bytearray random_bytes(size_t size) {
 
   return bytes;
 }
-
-}}
+}
+}

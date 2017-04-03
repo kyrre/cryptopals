@@ -18,6 +18,7 @@
 #include "bytearray.h"
 #include "hamming.h"
 #include "hist.h"
+#include "utils.h"
 
 // this does not sum to 1
 const hist en_relative_frequencies = {

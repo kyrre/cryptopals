@@ -1,7 +1,7 @@
 #include <algorithm>
 #include <iostream>
-#include <unordered_map>
 #include <random>
+#include <unordered_map>
 
 #include "fs.h"
 //#include "analysis/aes.h"
@@ -11,9 +11,9 @@
 //#include "oracle/profile.h"
 
 using namespace std;
-//using namespace oracle::aes;
+// using namespace oracle::aes;
 
-//template<typename T> T choice(const vector<T>& v) {
+// template<typename T> T choice(const vector<T>& v) {
 //	std::random_device random_device;
 //	std::mt19937 engine{random_device()};
 //	std::uniform_int_distribution<int> dist(0, v.size() - 1);
@@ -21,14 +21,13 @@ using namespace std;
 //	return v[dist(engine)];
 //}
 
-
-
-//const bytearray _key = random_aes_key();
+// const bytearray _key = random_aes_key();
 //
 //// should returne pair(cipher, iv)
-//bytearray encrypt_random_line() {
+// bytearray encrypt_random_line() {
 //
-//	const vector<string> lines = {"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
+//	const vector<string> lines =
+//{"MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",
 //															  "MDAwMDAxV2l0aCB0aGUgYmFzcyBraWNrZWQgaW4gYW5kIHRoZSBWZWdhJ3MgYXJlIHB1bXBpbic=",
 //															  "MDAwMDAyUXVpY2sgdG8gdGhlIHBvaW50LCB0byB0aGUgcG9pbnQsIG5vIGZha2luZw==",
 //															  "MDAwMDAzQ29va2luZyBNQydzIGxpa2UgYSBwb3VuZCBvZiBiYWNvbg==",
@@ -44,39 +43,36 @@ using namespace std;
 //	return cipher;
 //}
 
-
 int main() {
+  // const bytearray c = encrypt_random_line();
 
+  // bytearray d;
+  // for(size_t i = 1; i <= 16; ++i) {
+  //	for(BYTE z = 0x1; z < 0xff; ++z ) {
 
-	//const bytearray c = encrypt_random_line();
+  //		bytearray cipher = c;
 
-	//bytearray d;
-	//for(size_t i = 1; i <= 16; ++i) {
-	//	for(BYTE z = 0x1; z < 0xff; ++z ) {
+  //		size_t pad = d.size() + 1;
+  //		size_t j;
 
-	//		bytearray cipher = c;
+  //		// ah. fucker opp her
+  //		for(j = 0; j < i-1; ++j) {
+  //			cipher[16 - j - 1] ^= d[j] ^ pad;
+  //		}
 
-	//		size_t pad = d.size() + 1;
-	//		size_t j;
+  //		cipher[16 - j - 1] ^= z ^ pad;
 
-	//		// ah. fucker opp her
-	//		for(j = 0; j < i-1; ++j) {
-	//			cipher[16 - j - 1] ^= d[j] ^ pad;
-	//		}
+  //		auto pt = aes_cbc_decrypt(cipher, _key);
+  //		bool valid = valid_padding(slice(pt, 16, 16));
 
-	//		cipher[16 - j - 1] ^= z ^ pad;
+  //		//cout << slice(pt, 16, 16) << endl;
+  //		if (valid) {
+  //		  cout << "VALID z=" << static_cast<int>(z) << endl;
+  //			d.push_back(z);
+  //			break;
+  //		}
+  //	}
+  //}
 
-	//		auto pt = aes_cbc_decrypt(cipher, _key);
-	//		bool valid = valid_padding(slice(pt, 16, 16));
-
-	//		//cout << slice(pt, 16, 16) << endl;
-	//		if (valid) {
-	//		  cout << "VALID z=" << static_cast<int>(z) << endl;
-	//			d.push_back(z);
-	//			break;
-	//		}
-	//	}
-	//}
-
-	//cout << d << endl;
+  // cout << d << endl;
 }

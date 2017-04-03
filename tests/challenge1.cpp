@@ -1,18 +1,18 @@
-#include <boost/functional/hash.hpp>
 #include <catch.hpp>
 #include <tuple>
+#include <boost/functional/hash.hpp>
 
 #include "analysis/aes.h"
+#include "analysis/xor.h"
+#include "analysis/frequency.h"
+
 #include "methods/aes.h"
 #include "methods/padding.h"
 
-#include "analysis/frequency.h"
-#include "analysis/xor.h"
-#include "bytearray.h"
-#include "catch.hpp"
 #include "fs.h"
 #include "hex.h"
 #include "utils.h"
+#include "bytearray.h"
 
 TEST_CASE("Task 1") {
   auto bytes = hex::decode(

@@ -3,8 +3,8 @@
 #include <unordered_map>
 #include <vector>
 
-#include "methods/aes.h"
 #include "bytearray.h"
+#include "methods/aes.h"
 #include "utils.h"
 
 namespace oracle {
@@ -57,7 +57,7 @@ bytearray create_block(const bytearray& key,
   size_t email_pad_size = block_size - strlen("email=");
   size_t role_pad_size = block_size - role.size();
 
-  string input = string(email_pad_size, email_pad_size)+ role +
+  string input = string(email_pad_size, email_pad_size) + role +
                  string(role_pad_size, role_pad_size);
   bytearray cipher = encrypt_profile(key, profile_for(input));
 
@@ -68,7 +68,6 @@ bytearray create_block(const bytearray& key,
 Profile change_profile_role(const string& email = "foo@bar",
                             const string& role = "admin",
                             size_t block_size = 16) {
-
   auto key = rkey;
   const int field_size = 13;
   const int email_size = static_cast<int>(email.size());

@@ -59,9 +59,6 @@ class bytearray {
     return bytes.rend();
   }
 
-
-
-
   const_iterator begin() const {
     return bytes.begin();
   }
