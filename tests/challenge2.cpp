@@ -1,14 +1,12 @@
 #include <catch.hpp>
 
-#include "bytearray.h"
-
-#include "methods/padding.h"
-#include "methods/aes.h"
-#include "oracle/aes.h"
-#include "oracle/profile.h"
-
 #include "fs.h"
 #include "utils.h"
+#include "bytearray.h"
+#include "oracle/aes.h"
+#include "oracle/profile.h"
+#include "methods/padding.h"
+#include "methods/aes.h"
 
 
 TEST_CASE("Task 9") {

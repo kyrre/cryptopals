@@ -4,6 +4,7 @@
 
 #include "analysis/aes.h"
 #include "methods/aes.h"
+#include "methods/padding.h"
 
 #include "analysis/frequency.h"
 #include "analysis/xor.h"

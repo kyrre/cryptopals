@@ -1,6 +1,9 @@
 #pragma once
 
 #include <functional>
+#include <random>
+#include <cppcodec/base64_default_rfc4648.hpp>
+
 #include "analysis/aes.h"
 #include "bytearray.h"
 #include "methods/aes.h"

@@ -25,8 +25,6 @@ hunter_add_package(OpenSSL)
 hunter_add_package(JsonSpirit)
 
 
-
-
 # Find dependencies
 find_package(Catch CONFIG REQUIRED)
 find_package(cxxopts CONFIG REQUIRED)
@@ -36,21 +34,31 @@ find_package(OpenSSL REQUIRED)
 find_package(JsonSpirit CONFIG REQUIRED)
 
 
+set(BYTE
+  src/bytearray.cpp
+  src/utils.cpp
+)
+
+set(AES
+  src/methods/aes.cpp
+  src/methods/padding.cpp
+)
+
+
 # Targets
-add_executable(simple src/simple.cpp src/bytearray.cpp src/hist.cpp)
+add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto json)
 
 # Tests
-add_executable(challenge1 tests/base.cpp tests/challenge1.cpp src/bytearray.cpp src/hist.cpp)
+add_executable(challenge1 tests/base.cpp tests/challenge1.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge1 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
-
-add_executable(challenge2 tests/base.cpp tests/challenge2.cpp src/bytearray.cpp src/hist.cpp)
+#
+add_executable(challenge2 tests/base.cpp tests/challenge2.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
-
-
+#
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
 target_link_libraries(hist PUBLIC Catch::Catch)
-
+#
 add_executable(hamming tests/base.cpp tests/hamming.cpp src/bytearray.cpp)
 target_link_libraries(hamming PUBLIC Catch::Catch)
 
