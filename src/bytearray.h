@@ -4,6 +4,7 @@
 #include <ostream>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include <boost/functional/hash.hpp>
 
@@ -127,6 +128,13 @@ class bytearray {
   }
   void push_back(BYTE b);
   bytearray& extend(const bytearray& rhs);
+
+  bytearray reverse() {
+    BYTES b(bytes);
+    std::reverse(b.begin(), b.end());
+
+    return bytearray(b);
+  }
 };
 
 bool is_ascii(const bytearray& bytes);

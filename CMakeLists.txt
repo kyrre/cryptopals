@@ -42,6 +42,8 @@ set(BYTE
   src/hex.cpp
   src/fs.cpp
   src/hamming.cpp
+  src/oracle/aes.cpp
+  src/oracle/profile.cpp
 )
 
 set(AES
@@ -64,7 +66,7 @@ target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
 target_link_libraries(hist PUBLIC Catch::Catch)
 #
-add_executable(hamming tests/base.cpp tests/hamming.cpp ${BYTE})
+add_executable(hamming tests/base.cpp tests/hamming.cpp src/hamming.cpp src/bytearray.cpp)
 target_link_libraries(hamming PUBLIC Catch::Catch)
 
 

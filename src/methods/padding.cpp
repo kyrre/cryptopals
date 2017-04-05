@@ -10,7 +10,6 @@ bytearray pkcs(const bytearray& b, size_t block_size) {
   for (size_t i = 0; i < num_pad; ++i) {
     padded.push_back(num_pad);
   }
-
   return padded;
 }
 
@@ -19,14 +18,14 @@ bytearray strip_pkcs(const bytearray& b) {
   size_t padding_count = 0;
   size_t last_byte_found = 0xdeadbeef;
   decltype(b.rbegin()) rit;
+
   for (rit = b.rbegin(); rit != b.rend(); ++rit) {
     auto byte = *rit;
-    if (byte >= 0x1 && byte <= 0xf) {
+
+    if (byte >= 0x1 && byte <= 0x10) {
       if (last_byte_found == 0xdeadbeef) {
         last_byte_found = byte;
-      }
-
-      if (last_byte_found != byte) {
+      } else if (last_byte_found != byte) {
         break;
       }
 
@@ -37,8 +36,8 @@ bytearray strip_pkcs(const bytearray& b) {
     }
   }
 
-  if (padding_bytes.size() > 1) {
-    throw std::overflow_error("Different padding bytes detected.");
+  if (padding_count == 0) {
+    throw std::overflow_error("No padding detected.");
   } else if (padding_count > 0) {
     BYTE padding_byte = (*padding_bytes.begin());
     if (padding_byte != padding_count) {
@@ -56,7 +55,6 @@ bytearray strip_pkcs(const bytearray& b) {
 
 bool valid_padding(const bytearray& b) {
   bool valid = true;
-  ;
   try {
     strip_pkcs(b);
   } catch (overflow_error e) {
