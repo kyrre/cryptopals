@@ -94,3 +94,29 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
 
   return cipher;
 }
+
+bytearray aes_ctr(const bytearray& cipher,
+									const bytearray& key,
+								  const size_t block_size) {
+
+	long format;
+  unsigned long nonce = 0;
+	unsigned long counter = 0;
+
+	bytearray pt;
+	for (auto& block : chunk(cipher, block_size)) {
+
+		bytearray _nonce = long_to_bytes(nonce);
+		bytearray _counter = long_to_bytes(counter);
+		bytearray format = _nonce + _counter;
+
+		bytearray x = aes_encrypt_block(format, key);
+		pt = pt + (slice(x, 0, block.size()) ^ block);
+
+		++counter;
+  }
+
+	return pt;
+}
+
+

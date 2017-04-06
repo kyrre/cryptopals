@@ -33,3 +33,6 @@ auto find_duplicated_blocks(const bytearray& bytes,
 
 bytearray find_duplicated_block(const bytearray& bytes,
                                 const size_t block_size = 16);
+
+
+bytearray long_to_bytes(unsigned long num);

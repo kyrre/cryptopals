@@ -129,3 +129,12 @@ bytearray find_duplicated_block(const bytearray& bytes,
 
   return duplicated_block;
 }
+
+bytearray long_to_bytes(unsigned long num) {
+  bytearray bytes(8);
+  for (size_t i = 0; i < 8; i++) {
+    bytes[i] = (num >> (i * 8));
+  }
+  return bytes;
+}
+

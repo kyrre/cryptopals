@@ -14,6 +14,12 @@
 using namespace std;
 using namespace oracle::aes;
 
+
 int main() {
+
+  bytearray cipher(base64::decode("L77na/nrFsKvynd6HzOoG7GHTLXsTVu9qvY/2syLXzhPweyyMTJULu/6/kXX0KSvoOLSFQ=="));
+  bytearray key("YELLOW SUBMARINE");
+
+	cout << aes_ctr(cipher, key) << endl;
 
 }
