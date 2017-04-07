@@ -158,17 +158,17 @@ bytearray cbc_attack_block(const bytearray& c,
   assert(n_block > 0);
 
   bytearray plaintext;
-  int start_position = n_block * block_size;
+  size_t start_position = n_block * block_size;
 
-  for (int i = 0; i < block_size; ++i) {
-    int pad = i + 1;
-    int n_byte = start_position - i - 1;
+  for (size_t i = 0; i < block_size; ++i) {
+    size_t pad = i + 1;
+    size_t n_byte = start_position - i - 1;
 
     for (BYTE z = 0x1; z < 0xff; ++z) {
       bytearray cipher = c;
 
-      for (int j = 0; j < i; ++j) {
-        int prev_byte = start_position - j - 1;
+      for (size_t j = 0; j < i; ++j) {
+        size_t prev_byte = start_position - j - 1;
         cipher[prev_byte] ^= plaintext[j] ^ pad;
       }
 

@@ -51,5 +51,11 @@ bool padding_oracle(const bytearray& cipher,
 bytearray cbc_attack_block(const bytearray& c,
                            size_t n_block,
                            size_t block_size = 16);
+
+extern const bytearray key;
+extern const bytearray random_pre_padding;
+
 }
 }
+
+

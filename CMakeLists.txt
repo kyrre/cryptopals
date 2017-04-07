@@ -63,6 +63,12 @@ target_link_libraries(challenge1 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(challenge2 tests/base.cpp tests/challenge2.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
 #
+
+add_executable(challenge3 tests/base.cpp tests/challenge3.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
+target_link_libraries(challenge3 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
+#
+
+
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
 target_link_libraries(hist PUBLIC Catch::Catch)
 #
@@ -75,6 +81,8 @@ enable_testing()
 include_directories(src)
 add_test(NAME Challenge1 COMMAND challenge1)
 add_test(NAME Challenge2 COMMAND challenge2)
+add_test(NAME Challenge3 COMMAND challenge3)
+
 
 add_test(NAME Histogram COMMAND hist)
 add_test(NAME Hamming COMMAND hamming)
