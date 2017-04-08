@@ -1,10 +1,10 @@
 #pragma once
 
+#include <algorithm>
 #include <cstdint>
 #include <ostream>
 #include <string>
 #include <vector>
-#include <algorithm>
 
 #include <boost/functional/hash.hpp>
 

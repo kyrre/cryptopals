@@ -52,4 +52,10 @@ bytearray& decrypt_block(bytearray& decrypted,
 
 bytearray decrypt(encryption_func oracle, size_t start_block = 0);
 bytearray decrypt_prepad(encryption_func oracle);
+
+bytearray brute_force_keystream(const vector<bytearray>& ciphers);
+vector<bytearray> read_challenge_files(const string& filename);
+
+
+
 }

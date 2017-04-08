@@ -27,8 +27,6 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
                           bytearray iv = bytearray(16, '\x00'));
 
 bytearray aes_ctr(const bytearray& cipher,
-									const bytearray& key,
+                  const bytearray& key,
                   unsigned long nonce = 0,
-								  const size_t block_size = 16);
-
-
+                  const size_t block_size = 16);

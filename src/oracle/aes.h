@@ -54,8 +54,5 @@ bytearray cbc_attack_block(const bytearray& c,
 
 extern const bytearray key;
 extern const bytearray random_pre_padding;
-
 }
 }
-
-

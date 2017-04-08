@@ -30,12 +30,3 @@ TEST_CASE("Task 18") {
 
 
 }
-
-
-TEST_CASE("Task 19") {
-
-
-}
-
-
-

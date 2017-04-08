@@ -3,6 +3,7 @@
 #include <vector>
 
 #include "analysis/aes.h"
+#include "analysis/frequency_analysis.h"
 #include "bytearray.h"
 #include "hex.h"
 #include "utils.h"
@@ -175,4 +176,38 @@ bytearray decrypt_prepad(encryption_func oracle) {
 
   return decrypt(wrapper, start_block);
 }
+
+
+size_t shortest_size(const vector<bytearray>& ciphers) {
+  size_t min_length = numeric_limits<size_t>::max();
+
+  for (const auto& cipher : ciphers) {
+    min_length = min(min_length, cipher.size());
+  }
+
+  return min_length;
+}
+
+vector<bytearray> construct_pseudo_sentences(const vector<bytearray>& ciphers) {
+  vector<bytearray> sentences(ciphers.size());
+  for (const auto& cipher : ciphers) {
+    for (size_t i = 0; i < ciphers.size(); ++i) {
+      sentences[i].push_back(cipher[i]);
+    }
+  }
+
+  return sentences;
+}
+
+bytearray brute_force_keystream(const vector<bytearray>& ciphers) {
+  auto sentences = construct_pseudo_sentences(ciphers);
+
+  bytearray keystream;
+  for (auto& sentence : sentences) {
+    auto current_keystream_byte = frequency_analysis(sentence).key;
+    keystream.push_back(current_keystream_byte);
+  }
+  return keystream;
+}
+
 }
