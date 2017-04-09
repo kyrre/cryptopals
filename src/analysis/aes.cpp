@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "analysis/aes.h"
-#include "analysis/frequency_analysis.h"
+#include "analysis/frequency.h"
 #include "bytearray.h"
 #include "hex.h"
 #include "utils.h"

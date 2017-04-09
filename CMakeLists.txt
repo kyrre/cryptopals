@@ -44,6 +44,7 @@ set(BYTE
   src/hamming.cpp
   src/oracle/aes.cpp
   src/oracle/profile.cpp
+  src/analysis/frequency.cpp
 )
 
 set(AES
