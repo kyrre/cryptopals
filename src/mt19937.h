@@ -6,37 +6,45 @@ using namespace std;
 
 class MT19937 {
  public:
-  const int w = 32;
-  const int n = 624;
-  const int m = 397;
-  const int r = 31;
+  const unsigned int w = 32;
+  const unsigned int n = 624;
+  const unsigned int m = 397;
+  const unsigned int r = 31;
 
-  const int a = 0x9908B0DF;
+  const unsigned int a = 0x9908B0DF;
 
-  const int u = 11;
-  const int d = 0xFFFFFFFF;
+  const unsigned int u = 11;
+  const unsigned int d = 0xFFFFFFFF;
 
-  const int s = 7;
-  const int b = 0x9D2C5680;
+  const unsigned int s = 7;
+  const unsigned int b = 0x9D2C5680;
 
-  const int t = 15;
-  const int c = 0xEFC60000;
+  const unsigned int t = 15;
+  const unsigned int c = 0xEFC60000;
 
-  const int l = 18;
+  const unsigned int l = 18;
 
-  const int f = 1812433253;
+  const unsigned int f = 1812433253;
 
-  vector<int> MT;
-  int index = n + 1;
+  vector<unsigned int> MT;
+  unsigned int index = n + 1;
 
-  const int lower_mask = (1 << r) - 1;
-  const int upper_mask = ~lower_mask;
+  const unsigned int lower_mask = (1u << r) - 1u;
+  const unsigned int upper_mask = ~lower_mask;
 
-  MT19937(int seed);
+  MT19937(unsigned int seed);
+  MT19937(vector<unsigned int>& mt_state);
 
-  int operator()();
-  void seed_mt(int seed);
+  unsigned int operator()();
+  void seed_mt(unsigned int seed);
 
   void twist();
-  int extract_number();
+  unsigned int extract_number();
+  unsigned int untemper(unsigned int y);
 };
+
+vector<unsigned int> generate_sample(MT19937& mt);
+pair<unsigned int, bool> brute_force_seed(vector<unsigned int>& sample,
+                                          unsigned int start = time(NULL) -
+                                                               1000,
+                                          unsigned int end = time(NULL));

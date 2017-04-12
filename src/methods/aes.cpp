@@ -98,9 +98,8 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
 bytearray aes_ctr(const bytearray& cipher,
                   const bytearray& key,
                   unsigned long nonce,
+                  unsigned long counter,
                   const size_t block_size) {
-  unsigned long counter = 0;
-
   bytearray pt;
   for (auto& block : chunk(cipher, block_size)) {
     bytearray _nonce = long_to_bytes(nonce);

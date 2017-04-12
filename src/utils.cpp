@@ -1,5 +1,8 @@
 #include <boost/algorithm/string.hpp>
+#include <chrono>
+#include <random>
 #include <string>
+#include <thread>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
@@ -136,4 +139,13 @@ bytearray long_to_bytes(unsigned long num) {
     bytes[i] = (num >> (i * 8));
   }
   return bytes;
+}
+
+void wait_for(int lower, int upper) {
+  default_random_engine generator;
+  uniform_int_distribution<int> distribution(lower, upper);
+
+  auto duration = chrono::seconds(distribution(generator));
+
+  this_thread::sleep_for(duration);
 }

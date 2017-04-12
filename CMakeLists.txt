@@ -77,6 +77,10 @@ target_link_libraries(hist PUBLIC Catch::Catch)
 add_executable(hamming tests/base.cpp tests/hamming.cpp src/hamming.cpp src/bytearray.cpp)
 target_link_libraries(hamming PUBLIC Catch::Catch)
 
+add_executable(mt19937 tests/base.cpp tests/mt19937.cpp src/bytearray.cpp src/mt19937.cpp)
+target_link_libraries(mt19937 PUBLIC Catch::Catch)
+
+
 
 # Testing
 enable_testing()
@@ -88,4 +92,6 @@ add_test(NAME Challenge3 COMMAND challenge3)
 
 add_test(NAME Histogram COMMAND hist)
 add_test(NAME Hamming COMMAND hamming)
+add_test(NAME MT19937 COMMAND mt19937)
+
 
