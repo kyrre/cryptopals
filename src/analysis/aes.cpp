@@ -177,7 +177,6 @@ bytearray decrypt_prepad(encryption_func oracle) {
   return decrypt(wrapper, start_block);
 }
 
-
 size_t shortest_size(const vector<bytearray>& ciphers) {
   size_t min_length = numeric_limits<size_t>::max();
 
@@ -209,5 +208,4 @@ bytearray brute_force_keystream(const vector<bytearray>& ciphers) {
   }
   return keystream;
 }
-
 }

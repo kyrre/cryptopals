@@ -20,8 +20,6 @@
 #include "hist.h"
 #include "utils.h"
 
-
-
 // this does not sum to 1
 extern const hist en_relative_frequencies;
 
@@ -43,11 +41,11 @@ struct byte_key_info {
   }
 };
 
-
 hist compute_frequencies(const bytearray& plaintext);
 
 byte_key_info frequency_analysis(const bytearray& ciphertext);
 
-vector<pair<size_t, double>> guess_key_size(const bytearray& cipher, const size_t num_guesses);
+vector<pair<size_t, double>> guess_key_size(const bytearray& cipher,
+                                            const size_t num_guesses);
 
 bytearray break_repeatable_xor(const bytearray& cipher, const size_t size);

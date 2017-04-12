@@ -14,10 +14,10 @@
 #include <boost/range/irange.hpp>
 
 #include "bytearray.h"
+#include "frequency.h"
 #include "hamming.h"
 #include "hist.h"
 #include "utils.h"
-#include "frequency.h"
 
 // this does not sum to 1
 const hist en_relative_frequencies = {
@@ -52,7 +52,8 @@ byte_key_info frequency_analysis(const bytearray& ciphertext) {
   return minimum;
 }
 
-vector<pair<size_t, double>> guess_key_size(const bytearray& cipher, const size_t num_guesses) {
+vector<pair<size_t, double>> guess_key_size(const bytearray& cipher,
+                                            const size_t num_guesses) {
   auto KEYSIZES = boost::irange(2, 40, 1);
 
   using ENTRY = pair<size_t, double>;

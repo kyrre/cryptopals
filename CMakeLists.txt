@@ -45,6 +45,7 @@ set(BYTE
   src/oracle/aes.cpp
   src/oracle/profile.cpp
   src/analysis/frequency.cpp
+  src/mt19937.cpp
 )
 
 set(AES

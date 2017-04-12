@@ -137,4 +137,3 @@ bytearray long_to_bytes(unsigned long num) {
   }
   return bytes;
 }
-
