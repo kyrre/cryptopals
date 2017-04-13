@@ -36,28 +36,6 @@ bytearray edit(const bytearray& ciphertext,
   return aes_ctr(pre + new_text + post, key);
 }
 
-bytearray encryption_oracle_ctr(const string& chosen_plaintext) {
-  const vector<string> meta_characters = {"=", ";"};
-
-  const string pre = "comment1=cooking%20MCs;userdata=";
-  const string post = ";comment2=%20like%20a%20pound%20of%20bacon";
-
-  string plaintext = pre + chosen_plaintext + post;
-
-  for (const auto& meta : meta_characters) {
-    boost::replace_all(plaintext, meta, "\"" + meta + "\"");
-  }
-
-  auto cipher = aes_ctr(plaintext, key);
-  return cipher;
-}
-
-bool decrypt_oracle_ctr(const bytearray& cipher) {
-  string plaintext = aes_ctr(cipher, key).to_str();
-  bool found = plaintext.find(";admin=true;") != string::npos;
-  return found;
-}
-
 int main() {
   // edit
   // const bytearray ecb_key("YELLOW SUBMARINE");
@@ -73,17 +51,4 @@ int main() {
   // assert((ciphertext ^ keystream) == plaintext);
 
   // bit-flipping
-  //string wanted = ";admin=true;";
-  //string c(wanted.size(), 'A');
-
-  //bytearray cipher = encryption_oracle_ctr(c);
-  //bytearray keystream = slice(cipher, 38, c.size()) ^ c;
-  //bytearray diff = keystream ^ bytearray(wanted);
-
-  //bytearray new_message = slice(cipher, 0, 38);
-  //new_message =
-  //    new_message + diff +
-  //    slice(cipher, 38 + diff.size(), cipher.size() - 38 - diff.size());
-
-  //assert(decrypt_oracle_ctr(new_message));
 }

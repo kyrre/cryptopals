@@ -52,6 +52,15 @@ bytearray cbc_attack_block(const bytearray& c,
                            size_t n_block,
                            size_t block_size = 16);
 
+bytearray encryption_oracle_ctr(const string& chosen_plaintext);
+bool decrypt_oracle_ctr(const bytearray& cipher);
+
+bytearray edit(const bytearray& ciphertext,
+               const bytearray& key,
+               size_t offset,
+               const bytearray& new_text);
+
+
 extern const bytearray key;
 extern const bytearray random_pre_padding;
 }
