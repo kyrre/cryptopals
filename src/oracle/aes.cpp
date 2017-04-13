@@ -123,6 +123,38 @@ bytearray bit_flipping_cbc(const string& wanted) {
   return cipher;
 }
 
+bytearray encryption_oracle_cbc_same_iv(const string& chosen_plaintext) {
+  const vector<string> meta_characters = {"=", ";"};
+
+  const string pre = "comment1=cooking%20MCs;userdata=";
+  const string post = ";comment2=%20like%20a%20pound%20of%20bacon";
+
+  string plaintext = pre + chosen_plaintext + post;
+
+  for (const auto& meta : meta_characters) {
+    boost::replace_all(plaintext, meta, "\"" + meta + "\"");
+  }
+
+
+  const size_t block_size = 16;
+  const bytearray iv = key;
+
+  auto cipher = aes_cbc_encrypt(plaintext, key, block_size, iv);
+  return cipher;
+}
+
+void check_message_compliance(const bytearray& cipher) {
+
+  const size_t block_size = 16;
+  const bytearray iv = key;
+
+  const bytearray plaintext = aes_cbc_decrypt(cipher, key, block_size, iv);
+
+  if(!is_ascii(plaintext)) {
+    throw invalid_argument(plaintext.to_str());
+  }
+}
+
 bytearray encrypt_random_line() {
   const vector<string> lines = {
       "MDAwMDAwTm93IHRoYXQgdGhlIHBhcnR5IGlzIGp1bXBpbmc=",

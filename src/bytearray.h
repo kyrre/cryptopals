@@ -120,7 +120,7 @@ class bytearray {
     bytes.resize(size);
   }
 
-  string to_str() {
+  string to_str() const {
     string s;
     copy(bytes.begin(), bytes.end(), back_inserter(s));
 
