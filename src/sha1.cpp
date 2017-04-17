@@ -24,6 +24,7 @@
 #include <vector>
 
 #include "bytearray.h"
+#include "hex.h"
 
 static const size_t BLOCK_INTS = 16;  /* number of 32bit integers per SHA1 block */
 static const size_t BLOCK_BYTES = BLOCK_INTS * 4;
@@ -400,4 +401,29 @@ bool authenticate(const string& message, const string& mac) {
   return compute_mac_value(message) == mac;
 }
 
+SHA1 clone(const string& hash_value) {
+  vector<uint32_t> state = sha1_state(hex::decode(hash_value));
+  SHA1 s(state[0], state[1], state[2], state[3], state[4]);
+
+  return s;
+}
+
+
+pair<string, string> forge_message(const string& hash_value, const string& original_message, const size_t secret_key_size) {
+
+  const string glue_padding =  get_pad(original_message, secret_key_size);
+  const string fake_message = original_message + glue_padding + ";admin=true";
+  const string fake_pad = get_pad(fake_message, secret_key_size);
+
+  SHA1 s = clone(hash_value);
+
+  assert(s.get_digest() == hash_value);
+
+  // buffer optimization ruins it
+  s.update(";admin=true");
+  s.update(fake_pad);
+
+  return make_pair(fake_message, s.get_digest());
+
+}
 

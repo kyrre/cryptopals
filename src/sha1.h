@@ -52,3 +52,6 @@ std::string pad(std::string const &input, const size_t extra = 0);
 string compute_mac_value(const string& data, const string secret_key="AAAA");
 bool authenticate(const string& message, const string& mac);
 
+SHA1 clone(const string& hash_value);
+pair<string, string> forge_message(const string& hash_value, const string& original_message, const size_t secret_key_size = 4);
+
