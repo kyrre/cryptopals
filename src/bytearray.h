@@ -79,13 +79,13 @@ class bytearray {
   }
 
   unsigned char* ptr() {
-    return static_cast<unsigned char*>(&bytes[0]);
+    return static_cast<unsigned char*>(bytes.data());
   }
 
   // this is... not good
   unsigned char* const_ptr() const {
     return const_cast<unsigned char*>(
-        reinterpret_cast<const unsigned char*>(&bytes[0]));
+        reinterpret_cast<const unsigned char*>(bytes.data()));
   }
 
   friend size_t hash_value(const bytearray& b) {

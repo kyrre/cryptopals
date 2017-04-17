@@ -22,6 +22,7 @@
 #include <iomanip>
 #include <fstream>
 
+#include "bytearray.h"
 
 static const size_t BLOCK_INTS = 16;  /* number of 32bit integers per SHA1 block */
 static const size_t BLOCK_BYTES = BLOCK_INTS * 4;
@@ -94,6 +95,20 @@ static void R4(uint32_t block[BLOCK_INTS], const uint32_t v, uint32_t &w, const 
     block[i] = blk(block, i);
     z += (w^x^y) + block[i] + 0xca62c1d6 + rol(v, 5);
     w = rol(w, 30);
+}
+
+SHA1::SHA1(uint32_t a, uint32_t b, uint32_t c, uint32_t d, uint32_t e) {
+
+  buffer = "";
+  transforms = 0;
+
+
+
+  digest[0] = a;
+  digest[1] = b;
+  digest[2] = c;
+  digest[3] = d;
+  digest[4] = e;
 }
 
 
@@ -248,7 +263,6 @@ void SHA1::update(std::istream &is)
     }
 }
 
-
 /*
  * Add padding and return the message digest.
  */
@@ -257,6 +271,8 @@ std::string SHA1::final()
 {
     /* Total number of hashed bits */
     uint64_t total_bits = (transforms*BLOCK_BYTES + buffer.size()) * 8;
+
+    //std::cout << "transforms = " << transforms << std::endl;
 
     /* Padding */
     buffer += 0x80;
@@ -293,6 +309,18 @@ std::string SHA1::final()
 
     /* Reset for next run */
     reset(digest, buffer, transforms);
+
+    return result.str();
+}
+
+std::string SHA1::get_digest() {
+  /* Hex std::string */
+    std::ostringstream result;
+    for (size_t i = 0; i < sizeof(digest) / sizeof(digest[0]); i++)
+    {
+        result << std::hex << std::setfill('0') << std::setw(8);
+        result << digest[i];
+    }
 
     return result.str();
 }

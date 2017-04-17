@@ -46,6 +46,7 @@ set(BYTE
   src/oracle/profile.cpp
   src/analysis/frequency.cpp
   src/mt19937.cpp
+  src/sha1.cpp
 )
 
 set(AES
@@ -69,6 +70,10 @@ target_link_libraries(challenge2 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(challenge3 tests/base.cpp tests/challenge3.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge3 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
 #
+add_executable(challenge4 tests/base.cpp tests/challenge4.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
+target_link_libraries(challenge4 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
+#
+
 
 
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
@@ -88,6 +93,8 @@ include_directories(src)
 add_test(NAME Challenge1 COMMAND challenge1)
 add_test(NAME Challenge2 COMMAND challenge2)
 add_test(NAME Challenge3 COMMAND challenge3)
+add_test(NAME Challenge4 COMMAND challenge4)
+
 
 
 add_test(NAME Histogram COMMAND hist)
