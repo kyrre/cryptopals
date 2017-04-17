@@ -21,6 +21,7 @@
 #include <sstream>
 #include <iomanip>
 #include <fstream>
+#include <vector>
 
 #include "bytearray.h"
 
@@ -333,3 +334,70 @@ std::string SHA1::from_file(const std::string &filename)
     checksum.update(stream);
     return checksum.final();
 }
+
+std::vector<uint32_t> sha1_state(const bytearray& m) {
+
+  uint32_t *digest = reinterpret_cast<uint32_t*>(m.const_ptr());
+
+  std::vector<uint32_t> d;
+  for(size_t i= 0; i < 5; ++i) {
+    d.push_back(__builtin_bswap32(digest[i]));
+  }
+
+  return d;
+}
+
+std::string pad(std::string const &input, const size_t extra) {
+    static const size_t block_bits = 512;
+
+    uint64_t length = (input.size() + extra) * 8 + 1;
+    size_t remainder = length % block_bits;
+    size_t k = (remainder <= 448) ? 448 - remainder : 960 - remainder;
+
+    std::string padding("\x80");
+    padding.append(std::string(k/8, '\0'));
+    --length;
+
+    for (int i=sizeof(length)-1; i>-1; i--) {
+            unsigned char byte = length >> (i*8) & 0xff;
+            padding.push_back(byte);
+        }
+
+    std::string ret(input+padding);
+    return ret;
+}
+
+
+std::string get_pad(std::string const &input, const size_t extra) {
+    static const size_t block_bits = 512;
+
+    uint64_t length = (input.size() + extra) * 8 + 1;
+    size_t remainder = length % block_bits;
+    size_t k = (remainder <= 448) ? 448 - remainder : 960 - remainder;
+
+    std::string padding("\x80");
+    padding.append(std::string(k/8, '\0'));
+    --length;
+
+    for (int i=sizeof(length)-1; i>-1; i--) {
+            unsigned char byte = length >> (i*8) & 0xff;
+            padding.push_back(byte);
+        }
+
+    std::string ret(padding);
+    return ret;
+}
+
+string compute_mac_value(const string& data, const string secret_key) {
+  SHA1 checksum;
+  checksum.update(secret_key);
+  checksum.update(data);
+
+  return checksum.final();
+}
+
+bool authenticate(const string& message, const string& mac) {
+  return compute_mac_value(message) == mac;
+}
+
+

@@ -17,9 +17,10 @@
         -- Eugene Hopkinson <slowriot at voxelstorm dot com>
 */
 
-#ifndef SHA1_HPP
-#define SHA1_HPP
+#pragma once
 
+#include <vector>
+#include "bytearray.h"
 
 #include <cstdint>
 #include <iostream>
@@ -44,4 +45,10 @@ public:
 };
 
 
-#endif /* SHA1_HPP */
+std::vector<uint32_t> sha1_state(const bytearray& m);
+std::string get_pad(std::string const &input, const size_t extra = 0);
+std::string pad(std::string const &input, const size_t extra = 0);
+
+string compute_mac_value(const string& data, const string secret_key="AAAA");
+bool authenticate(const string& message, const string& mac);
+
