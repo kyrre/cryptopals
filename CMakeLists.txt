@@ -9,9 +9,9 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-gnu")
 # Hunter snapshot that will be used
 include("cmake/HunterGate.cmake")
 HunterGate(
-    URL
-    "https://github.com/ruslo/hunter/archive/v0.18.2.tar.gz"
-    SHA1 "3ba70e0e13bd65f80d8e984203774b0e58cbfa0f")
+    URL "https://github.com/ruslo/hunter/archive/v0.18.43.tar.gz"
+    SHA1 "d2c8c42cd07f7cefe18fd9a9b9c13114b1a15a27"
+)
 
 # ignore warnings from
 include_directories(SYSTEM "include")
@@ -24,16 +24,20 @@ hunter_add_package(fmt)
 hunter_add_package(Boost)
 hunter_add_package(OpenSSL)
 hunter_add_package(JsonSpirit)
+#hunter_add_package(cryptopp)
+hunter_add_package(Boost COMPONENTS system filesystem)
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(Threads REQUIRED)
 
 
 # Find dependencies
 find_package(Catch CONFIG REQUIRED)
 find_package(cxxopts CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
-find_package(Boost CONFIG REQUIRED)
+find_package(Boost CONFIG REQUIRED system)
 find_package(OpenSSL REQUIRED)
 find_package(JsonSpirit CONFIG REQUIRED)
-
 
 set(BYTE
   src/bytearray.cpp
@@ -58,6 +62,10 @@ set(AES
 # Targets
 add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto json)
+
+add_executable(server src/server.cpp src/bytearray.cpp src/sha1.cpp src/hex.cpp)
+target_link_libraries(server PUBLIC fmt Boost::system Threads::Threads)
+
 
 # Tests
 add_executable(challenge1 tests/base.cpp tests/challenge1.cpp src/hist.cpp ${AES} ${BYTE})
