@@ -9,6 +9,7 @@
 #include "methods/aes.h"
 #include "analysis/aes.h"
 
+#include "sha1.h"
 
 TEST_CASE("CTR edit") {
 
@@ -72,4 +73,30 @@ TEST_CASE("IV=KEY") {
 }
 
 TEST_CASE("MAC") {
+
+  const string input = "abc";
+  string mac = compute_mac_value(input);
+
+  REQUIRE(authenticate(input, mac) == true);
+
+  mac[1] ^= 0x5;
+  REQUIRE(authenticate(input, mac) == false);
+
 }
+
+
+TEST_CASE("Challenge 29") {
+  const string original_message = "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon";
+  const string mac_value = compute_mac_value(original_message);
+
+
+  auto k = forge_message(mac_value, original_message);
+
+  string fake_message = k.first;
+  string fake_mac = k.second;
+
+
+  REQUIRE(authenticate(fake_message, fake_mac));
+
+}
+
