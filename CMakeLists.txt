@@ -3,7 +3,8 @@ cmake_minimum_required(VERSION 3.7.1)
 set(CMAKE_C_COMPILER "/usr/bin/clang")
 set(CMAKE_CXX_COMPILER "/usr/bin/clang++")
 set(CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-gnu")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Wextra -Wno-gnu -pthread")
+set(THREADS_PREFER_PTHREAD_FLAG ON)
 
 
 # Hunter snapshot that will be used
@@ -23,13 +24,12 @@ hunter_add_package(cxxopts)
 hunter_add_package(fmt)
 hunter_add_package(Boost)
 hunter_add_package(OpenSSL)
-hunter_add_package(JsonSpirit)
-#hunter_add_package(cryptopp)
 hunter_add_package(Boost COMPONENTS system filesystem)
+hunter_add_package(CURL)
 
-set(THREADS_PREFER_PTHREAD_FLAG ON)
+
+
 find_package(Threads REQUIRED)
-
 
 # Find dependencies
 find_package(Catch CONFIG REQUIRED)
@@ -37,7 +37,9 @@ find_package(cxxopts CONFIG REQUIRED)
 find_package(fmt CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED system)
 find_package(OpenSSL REQUIRED)
-find_package(JsonSpirit CONFIG REQUIRED)
+find_package(CURL CONFIG REQUIRED)
+
+
 
 set(BYTE
   src/bytearray.cpp
@@ -61,7 +63,7 @@ set(AES
 
 # Targets
 add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE})
-target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto json)
+target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl)
 
 add_executable(server src/server.cpp src/bytearray.cpp src/sha1.cpp src/hex.cpp)
 target_link_libraries(server PUBLIC fmt Boost::system Threads::Threads)
@@ -81,7 +83,9 @@ target_link_libraries(challenge3 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(challenge4 tests/base.cpp tests/challenge4.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge4 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
 #
-
+add_executable(challenge5 tests/base.cpp tests/challenge5.cpp)
+target_link_libraries(challenge5 PUBLIC Catch::Catch Boost::boost OpenSSL::SSL OpenSSL::Crypto)
+#
 
 
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
@@ -103,10 +107,6 @@ add_test(NAME Challenge2 COMMAND challenge2)
 add_test(NAME Challenge3 COMMAND challenge3)
 add_test(NAME Challenge4 COMMAND challenge4)
 
-
-
 add_test(NAME Histogram COMMAND hist)
 add_test(NAME Hamming COMMAND hamming)
 add_test(NAME MT19937 COMMAND mt19937)
-
-

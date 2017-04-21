@@ -135,7 +135,6 @@ bytearray encryption_oracle_cbc_same_iv(const string& chosen_plaintext) {
     boost::replace_all(plaintext, meta, "\"" + meta + "\"");
   }
 
-
   const size_t block_size = 16;
   const bytearray iv = key;
 
@@ -144,13 +143,12 @@ bytearray encryption_oracle_cbc_same_iv(const string& chosen_plaintext) {
 }
 
 void check_message_compliance(const bytearray& cipher) {
-
   const size_t block_size = 16;
   const bytearray iv = key;
 
   const bytearray plaintext = aes_cbc_decrypt(cipher, key, block_size, iv);
 
-  if(!is_ascii(plaintext)) {
+  if (!is_ascii(plaintext)) {
     throw invalid_argument(plaintext.to_str());
   }
 }
@@ -255,8 +253,5 @@ bytearray edit(const bytearray& ciphertext,
 
   return aes_ctr(pre + new_text + post, key);
 }
-
-
-
 }
 }

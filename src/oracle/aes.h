@@ -31,7 +31,6 @@ bytearray encryption_oracle_cbc(const string& chosen_plaintext);
 
 bytearray encryption_oracle_cbc_same_iv(const string& chosen_plaintext);
 
-
 bool decrypt_oracle_cbc(const bytearray& cipher);
 
 bytearray bit_flipping_cbc(const string& wanted = ";admin=true;");
@@ -63,11 +62,8 @@ bytearray edit(const bytearray& ciphertext,
                size_t offset,
                const bytearray& new_text);
 
-
-
 // throw exeception if there are any non-ascii bytes
 void check_message_compliance(const bytearray& cipher);
-
 
 extern const bytearray key;
 extern const bytearray random_pre_padding;
