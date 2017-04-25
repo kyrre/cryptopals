@@ -78,14 +78,18 @@ class Entity {
     s = powm(external_A, a, p);
   }
 
-  void send(Entity& dest, const bytearray& message_text) {
+
+  //Message encode_message(const bytearray& message_text) {
+  //}
+
+  Message send(const bytearray& message_text) {
     bytearray key = slice(sha1(s), 0, block_size);
     bytearray iv = oracle::aes::random_bytes(block_size);
     bytearray cipher = aes_cbc_encrypt(message_text, key, block_size, iv);
 
     Message message(cipher, iv);
 
-    dest.recv(message);
+    return message;
   }
 
   void recv(const Message& message) {
@@ -95,6 +99,19 @@ class Entity {
         aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
 
     cout << plaintext << endl;
+
+  }
+
+  void relay(Entity& dest, const Message& message) {
+
+    bytearray key = slice(sha1(s), 0, block_size);
+
+   // bytearray plaintext = strip_pkcs(
+   //     aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
+
+
+
+    dest.recv(message);
   }
 };
 
@@ -115,20 +132,13 @@ class Participant : public Entity {
   Participant() = default;
 
   void ack(Participant& dest) {
+    ack(dest, this->A);
+  }
+
+  void ack(Participant& dest, cpp_int A) {
     dest.external_A = A;
   }
-};
 
-class MaliciousPartipant : public Entity {
-public:
-};
-
-class Connection {
- public:
-  Participant& src;
-  Participant& dest;
-
-  Connection(Participant& A, Participant& B) : src(A), dest(B) {}
 };
 
 int main() {
@@ -137,21 +147,27 @@ int main() {
   Participant A(param.p, param.g, param.A, param.a);
   Participant B(param.B, param.b);
 
-  ////Connection connection(A, B
-  A.initialize_exchange(B);
+  bytearray a_message("A test");
+  bytearray b_message("B test");
+
+
+  Participant M;
+
+  A.initialize_exchange(M);
+  M.set_param();
+
+  M.initialize_exchange(B, M.p, M.g, M.p);
   B.set_param();
 
-  B.ack(A);
+  B.ack(M);
+
+  M.ack(A, M.p);
   A.set_param();
 
-  bytearray message("test");
+  Message m = A.send(a_message);
+  M.relay(B, m);
 
-  A.send(B, message);
+  Message mb = B.send(b_message);
+  M.relay(A, mb);
 
-  // Participant M;
-
-  // A.initialize_exchange(M);
-  // M.initialize_exchange(B, M.p, M.g, M.p);
-
-  // B.ack(M);
 }
