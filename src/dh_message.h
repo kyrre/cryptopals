@@ -5,6 +5,8 @@
 #include "methods/aes.h"
 #include "methods/padding.h"
 
+#include "oracle/aes.h"
+
 #include "bigint.h"
 #include "dh.h"
 
@@ -19,10 +21,8 @@ class Message {
       : cipher(_cipher), iv(_iv) {}
 };
 
-
 class Participant {
-public:
-
+ public:
   static int participant_count;
   int id;
 
@@ -31,16 +31,14 @@ public:
   virtual void connect(Participant& p) = 0;
   virtual void init(Participant& dest, const DH& params) = 0;
   virtual void respond(Participant& p) = 0;
-  virtual void recv(const Message& message) = 0;
+  virtual bytearray recv(const Message& message) = 0;
   virtual Message send(const bytearray& text) = 0;
 
-
   Participant() {
-      id = participant_count++;
+    id = participant_count++;
   }
 
   Message build_message(cpp_int s, const bytearray& text) {
-
     bytearray key = slice(sha1(s), 0, block_size);
     bytearray iv = oracle::aes::random_bytes(block_size);
     bytearray cipher = aes_cbc_encrypt(text, key, block_size, iv);
@@ -48,14 +46,12 @@ public:
     Message message(cipher, iv);
     return message;
   }
-
 };
 
 int Participant::participant_count = 0;
 
-
-class NormalParticipant : public Participant{
-public:
+class NormalParticipant : public Participant {
+ public:
   DH params;
   DH remote;
 
@@ -69,8 +65,9 @@ public:
     dest.init(*this, params);
   }
 
-  void init(Participant& dest, const DH& params) override {
-    remote = params;
+  void init(Participant& dest, const DH& _remote) override {
+    params = DH(_remote.p, _remote.g);
+    remote = _remote;
   }
 
   Message send(const bytearray& text) override {
@@ -78,25 +75,23 @@ public:
     return build_message(s, text);
   }
 
-  void recv(const Message& message) override {
+  bytearray recv(const Message& message) override {
     s = powm(remote.A, params.a, params.p);
 
     bytearray key = slice(sha1(s), 0, block_size);
     bytearray plaintext = strip_pkcs(
         aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
-    cout << plaintext << endl;
+
+    return plaintext;
   }
-
-
 };
 
-
 class Middleman : public Participant {
-public:
-
-
+ public:
   vector<bytearray> messages;
 
+
+  bool uninit = true;
   int id_1;
   int id_2;
 
@@ -108,7 +103,6 @@ public:
   cpp_int s2;
 
   void connect(Participant& dest) override {
-
     id_2 = dest.id;
 
     DH fake_params;
@@ -117,12 +111,18 @@ public:
     dest.init(*this, fake_params);
   }
 
-  void init(Participant& dest, const DH& params) override {
-    if (dest.id == id_2) {
-      remote2 = params;
-    } else {
+  void init(Participant& dest, const DH& new_params) override {
+
+    // the sentinel value can be refactored away
+    if (uninit) {
       id_1 = dest.id;
-      remote1 = params;
+      uninit = false;
+    }
+
+    if (dest.id == id_1) {
+      remote1 = new_params;
+    } else {
+      remote2 = new_params;
     }
   }
 
@@ -132,12 +132,13 @@ public:
     dest.init(*this, fake_params);
   }
 
-  void recv(const Message& message) override {}
-
-  Message send(const bytearray& text) override {
+  bytearray recv(const Message& message) override {
+    return decrypt_intercepted_message(message);
   }
 
-  void decrypt_intercepted_message(const Message& message) {
+  Message send(const bytearray& text) override {}
+
+  virtual bytearray decrypt_intercepted_message(const Message& message) {
     s1 = powm(remote1.p, remote2.a, remote1.p);
 
     bytearray key = slice(sha1(s1), 0, block_size);
@@ -145,11 +146,64 @@ public:
         aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
 
     messages.push_back(plaintext);
+
+    return plaintext;
   }
 
-  Message relay(const Message& message) {
+  virtual Message relay(const Message& message) {
     decrypt_intercepted_message(message);
     return message;
+  }
+
+};
+
+class MiddlemanGroup : public Middleman {
+public:
+  cpp_int fake_g;
+
+  MiddlemanGroup(cpp_int g = 1) : fake_g(g) {}
+
+  void connect(Participant& dest) override {
+    id_2 = dest.id;
+
+    DH fake_params = remote1;
+    fake_params.g = fake_g;
+
+    dest.init(*this, fake_params);
+  }
+
+  void respond(Participant& dest) override {
+    DH fake_params = remote2;
+    fake_params.g = params.g;
+
+    dest.init(*this, fake_params);
+  }
+
+  cpp_int reconstruct_key() {
+    s1 = 1;
+
+    if (fake_g == 1) {
+      s1 = bigint("1");
+    } else if(fake_g == (params.p - 1)) {
+      s1 = bigint("1");
+    } else if (fake_g == params.p) {
+      s1 = 0;
+    }
+
+    return s1;
+  }
+
+  bytearray decrypt_intercepted_message(const Message& message) override {
+
+    s1 = reconstruct_key();
+
+    bytearray key = slice(sha1(s1), 0, block_size);
+    bytearray plaintext = strip_pkcs(
+        aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
+
+    messages.push_back(plaintext);
+
+    return plaintext;
   }
 
 

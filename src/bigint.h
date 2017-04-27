@@ -7,6 +7,9 @@
 #include <boost/random.hpp>
 #include <boost/random/independent_bits.hpp>
 
+#include "sha1.h"
+#include "hex.h"
+
 using namespace std;
 using namespace boost::multiprecision;
 
@@ -32,5 +35,3 @@ bytearray sha1(const string& s) {
 bytearray sha1(cpp_int i) {
   return sha1(to_str(i));
 }
-
-

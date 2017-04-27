@@ -24,100 +24,43 @@
 #include "dh.h"
 #include "dh_message.h"
 
-//class Entity {
-// public:
-//  const size_t block_size = 16;
-//
-//  cpp_int s;
-//  cpp_int p;
-//  cpp_int g;
-//  cpp_int A;
-//  cpp_int a;
-//
-//  cpp_int external_A;
-//
-//  cpp_int external_A2;
-//  cpp_int s2;
-//
-//  void initialize_exchange(Entity& dest) {
-//    initialize_exchange(dest, p, g, A);
-//  }
-//
-//  void initialize_exchange(Entity& dest, cpp_int _p, cpp_int _g, cpp_int _A) {
-//    dest.p = _p;
-//    dest.g = _g;
-//    dest.external_A = _A;
-//  }
-//
-//  void set_param() {
-//    s = powm(external_A, a, p);
-//  }
-//
-//  void set_param(cpp_int& s, cpp_int external_A, cpp_int a, cpp_int p) {
-//    s = powm(external_A, a, p);
-//  }
-//
-//  //Message encode_message(const bytearray& message_text) {
-//  //}
-//
-//  Message send(const bytearray& message_text) {
-//    bytearray key = slice(sha1(s), 0, block_size);
-//    bytearray iv = oracle::aes::random_bytes(block_size);
-//    bytearray cipher = aes_cbc_encrypt(message_text, key, block_size, iv);
-//
-//    Message message(cipher, iv);
-//
-//    return message;
-//  }
-//
-//  void recv(const Message& message) {
-//    bytearray key = slice(sha1(s), 0, block_size);
-//
-//    bytearray plaintext = strip_pkcs(
-//        aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
-//
-//    cout << plaintext << endl;
-//
-//  }
-//
-//  void relay(Entity& dest, const Message& message) {
-//
-//    //const cpp_int s1 = powm(external_A, a, p);
-//
-//    //bytearray key = slice(sha1(s1), 0, block_size);
-//
-//    // bytearray plaintext = strip_pkcs(
-//    //    aes_cbc_decrypt(message.cipher, key, block_size, message.iv));
-//
-//
-//
-//    dest.recv(message);
-//  }
-//};
-//
+#include "picosha2.h"
+
 int main() {
 
-  NormalParticipant alice;
-  NormalParticipant bob;
-  Middleman mallory;
 
-  alice.connect(mallory);
-  mallory.connect(bob);
+  bigint p =
+      bigint(
+      "0xffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024"
+      "e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd"
+      "3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec"
+      "6f44c42e9a637ed6b0bff5cb6f406b7edee386bfb5a899fa5ae9f"
+      "24117c4b1fe649286651ece45b3dc2007cb8a163bf0598da48361"
+      "c55d39a69163fa8fd24cf5f83655d23dca3ad961c62f356208552"
+      "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
+      "fffffffffffff");
 
-  bob.respond(mallory);
-  mallory.respond(alice);
+   cpp_int g = 2;
+   cpp_int k =3;
 
-  //
+   string I = "email";
+   string P = "password";
 
-  bytearray message("text");
+   cpp_int salt = gen();
 
-  Participant& src = bob;
-  Participant& dest = alice;
 
-  dest.recv(
-      mallory.relay(
-        src.send(message)
-      )
-  );
 
+   string input = picosha2::hash256_hex_string(hex::decode(to_str(salt) + hex::encode(P)).to_str());
+
+   cout << input << endl;
+
+
+
+   //cpp_int xH = cpp_int("0x" + 
+   //string s = sha1_str(to_str(salt) + P).to_str();
+
+   //cout << s << endl;
+   //xH=SHA256(salt|password)
+   // Generate salt as random integer
+     
 }
