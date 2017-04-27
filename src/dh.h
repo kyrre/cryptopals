@@ -11,7 +11,16 @@ using bigint = cpp_int;
 using generator_type =
     boost::random::independent_bits_engine<std::mt19937, 256, bigint>;
 
-const bigint _p = bigint(
+
+class DH {
+
+ public:
+
+  generator_type gen;
+
+  bigint g = bigint("2");
+
+  bigint p = bigint(
     "0xffffffffffffffffc90fdaa22168c234c4c6628b80dc1cd129024"
     "e088a67cc74020bbea63b139b22514a08798e3404ddef9519b3cd"
     "3a431b302b0a6df25f14374fe1356d6d51c245e485b576625e7ec"
@@ -21,13 +30,6 @@ const bigint _p = bigint(
     "bb9ed529077096966d670c354e4abc9804f1746c08ca237327fff"
     "fffffffffffff");
 
-const bigint g = bigint("2");
-
-class DH {
- public:
-  generator_type gen;
-
-  const bigint p = _p;
   bigint a;
   bigint A;
 
@@ -35,4 +37,8 @@ class DH {
     a = gen() % p;
     A = powm(g, a, p);
   }
+
+  DH(const DH& r) = default;
+  DH& operator=(const DH& r) = default;
 };
+

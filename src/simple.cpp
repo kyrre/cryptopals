@@ -95,36 +95,29 @@
 //  }
 //};
 //
-//class Participant : public Entity {
-// public:
-//  Participant(cpp_int p, cpp_int g, cpp_int A, cpp_int a) {
-//    this->p = p;
-//    this->g = g;
-//    this->A = A;
-//    this->a = a;
-//  }
-//
-//  Participant(cpp_int A, cpp_int a) {
-//    this->A = A;
-//    this->a = a;
-//  }
-//
-//  Participant() = default;
-//
-//  void ack(Participant& dest) {
-//    ack(dest, this->A);
-//  }
-//
-//  void ack(Participant& dest, cpp_int A) {
-//    dest.external_A = A;
-//  }
-//
-//  void ack(Participant& dest, cpp_int A) {
-//    dest.external_A = A;
-//  }
-//
-//
-//};
-
 int main() {
+
+  NormalParticipant alice;
+  NormalParticipant bob;
+  Middleman mallory;
+
+  alice.connect(mallory);
+  mallory.connect(bob);
+
+  bob.respond(mallory);
+  mallory.respond(alice);
+
+  //
+
+  bytearray message("text");
+
+  Participant& src = bob;
+  Participant& dest = alice;
+
+  dest.recv(
+      mallory.relay(
+        src.send(message)
+      )
+  );
+
 }
