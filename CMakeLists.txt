@@ -53,6 +53,13 @@ set(BYTE
   src/analysis/frequency.cpp
   src/mt19937.cpp
   src/sha1.cpp
+  src/bigint.cpp
+  src/dh.cpp
+  )
+
+set(SRP
+  src/srp/server.cpp
+  src/srp/client.cpp
 )
 
 set(AES
@@ -62,7 +69,7 @@ set(AES
 
 
 # Targets
-add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE})
+add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE} ${SRP})
 target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl)
 
 add_executable(server src/server.cpp src/bytearray.cpp src/sha1.cpp src/hex.cpp)
@@ -83,9 +90,8 @@ target_link_libraries(challenge3 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypt
 add_executable(challenge4 tests/base.cpp tests/challenge4.cpp src/bytearray.cpp src/hist.cpp ${AES} ${BYTE})
 target_link_libraries(challenge4 PUBLIC Catch::Catch OpenSSL::SSL OpenSSL::Crypto)
 #
-add_executable(challenge5 tests/base.cpp tests/challenge5.cpp)
-target_link_libraries(challenge5 PUBLIC Catch::Catch Boost::boost OpenSSL::SSL OpenSSL::Crypto)
-#
+add_executable(challenge5 tests/base.cpp tests/challenge5.cpp src/hist.cpp ${BYTE} ${AES})
+target_link_libraries(challenge5 PUBLIC Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads)
 
 
 add_executable(hist tests/base.cpp tests/hist.cpp src/hist.cpp src/bytearray.cpp)
@@ -106,6 +112,8 @@ add_test(NAME Challenge1 COMMAND challenge1)
 add_test(NAME Challenge2 COMMAND challenge2)
 add_test(NAME Challenge3 COMMAND challenge3)
 add_test(NAME Challenge4 COMMAND challenge4)
+add_test(NAME Challenge5 COMMAND challenge5)
+
 
 add_test(NAME Histogram COMMAND hist)
 add_test(NAME Hamming COMMAND hamming)

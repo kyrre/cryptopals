@@ -1,7 +1,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include "bytearray.h"
+#include "../bytearray.h"
 #include "methods/aes.h"
 #include "profile.h"
 #include "utils.h"

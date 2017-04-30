@@ -90,7 +90,6 @@ class Middleman : public Participant {
  public:
   vector<bytearray> messages;
 
-
   bool uninit = true;
   int id_1;
   int id_2;
@@ -112,7 +111,6 @@ class Middleman : public Participant {
   }
 
   void init(Participant& dest, const DH& new_params) override {
-
     // the sentinel value can be refactored away
     if (uninit) {
       id_1 = dest.id;
@@ -154,11 +152,10 @@ class Middleman : public Participant {
     decrypt_intercepted_message(message);
     return message;
   }
-
 };
 
 class MiddlemanGroup : public Middleman {
-public:
+ public:
   cpp_int fake_g;
 
   MiddlemanGroup(cpp_int g = 1) : fake_g(g) {}
@@ -184,7 +181,7 @@ public:
 
     if (fake_g == 1) {
       s1 = bigint("1");
-    } else if(fake_g == (params.p - 1)) {
+    } else if (fake_g == (params.p - 1)) {
       s1 = bigint("1");
     } else if (fake_g == params.p) {
       s1 = 0;
@@ -194,7 +191,6 @@ public:
   }
 
   bytearray decrypt_intercepted_message(const Message& message) override {
-
     s1 = reconstruct_key();
 
     bytearray key = slice(sha1(s1), 0, block_size);
@@ -205,6 +201,4 @@ public:
 
     return plaintext;
   }
-
-
 };
