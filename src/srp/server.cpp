@@ -34,7 +34,6 @@ void Server::login(string& _I, cpp_int _A) {
   string uH = picosha2::hash256_hex_string(
       hex::decode(to_str(A) + to_str(B)));
 
-
   u = bigint("0x" + uH) % N;
 
   bigint tmp_1 = powm(v, u, N);
@@ -44,6 +43,14 @@ void Server::login(string& _I, cpp_int _A) {
   client->set_param(salt, B);
 }
 
-void Server::connect(const Client& c) {
-  client = make_shared<Client>(c);
+void Server::connect(Client* c) {
+  client = c;
 }
+
+void Server::passwd(const string& hmac) {
+  string _hmac = hmac_sha256(K, salt);
+  if(hmac == _hmac) {
+    cout << "OK" << endl;
+  }
+}
+

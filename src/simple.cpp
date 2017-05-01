@@ -32,5 +32,7 @@ int main() {
   Server server;
   Client client;
 
-  client.connect(server).login();
+  client.connect(&server).login();
+  client.passwd();
+
 }

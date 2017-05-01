@@ -33,7 +33,6 @@ void Client::set_param(bigint _salt, bigint _B) {
 
   K = bigint("0x" + hex::encode(sha1(S).to_str()));
 
-  cout << K << endl;
 
 }
 
@@ -42,13 +41,21 @@ Client::Client() {
   A = powm(g, a, N);
 }
 
-Client& Client::connect(const Server& s) {
-  server = make_shared<Server>(s);
-  server->connect(*this);
+Client& Client::connect(Server *s) {
+  server = s;
+  server->connect(this);
 
   return *this;
 }
 
-void Client::login() {
+Client& Client::login() {
   server->login(I, A);
+
+
+  return *this;
+}
+
+void Client::passwd() {
+  string hmac = hmac_sha256(K, salt);
+  server->passwd(hmac);
 }

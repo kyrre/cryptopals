@@ -9,14 +9,17 @@ class Server;
 
 class Client : public CommonParameters {
  public:
-  shared_ptr<Server> server;
+  Server *server;
   bigint salt;
   bigint a;
   bigint v;
 
 
+
   Client();
-  Client& connect(const Server& s);
-  void login();
+  Client& connect(Server *s);
+  Client& login();
   void set_param(bigint _salt, bigint _B);
+
+  void passwd();
 };
