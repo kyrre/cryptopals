@@ -18,7 +18,7 @@ class Client : public CommonParameters {
 
 
   Client();
-
+  Client(string I, string P, bigint N);
   Client(string I, string P);
 
   Client& connect(Server *s);

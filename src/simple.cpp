@@ -30,9 +30,8 @@
 
 int main() {
   Server server;
-  Client client;
+  Client client("email", "password", server.N);
 
-  client.A = 0;
 
   client.connect(&server).login();
   cout << client.passwd().status << endl;

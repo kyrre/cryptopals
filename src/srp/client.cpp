@@ -29,6 +29,7 @@ void Client::set_param(bigint _salt, bigint _B) {
   cpp_int tmp_1 = (B - k * v);
   bigint tmp_2 = (a + u * x) % N;
 
+  cout << A << endl;
   if (A == 0) {
     S = 0;
   } else {
@@ -71,6 +72,22 @@ Client& Client::passwd() {
 Client::Client(string _I, string _P) {
   I = _I;
   P = _P;
-  Client();
+
+  a = gen() % N;
+  A = powm(g, a, N);
+}
+
+Client::Client(string _I, string _P, bigint _N) {
+  N = _N;
+
+  I = _I;
+  P = _P;
+
+  a = gen() % N;
+  A = powm(g, a, N);
 
 }
+
+
+
+
