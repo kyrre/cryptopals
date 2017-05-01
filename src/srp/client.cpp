@@ -29,7 +29,13 @@ void Client::set_param(bigint _salt, bigint _B) {
   cpp_int tmp_1 = (B - k * v);
   bigint tmp_2 = (a + u * x) % N;
 
-  S = powm(tmp_1, tmp_2, N);
+  if (A == 0) {
+    S = 0;
+  } else {
+    S = powm(tmp_1, tmp_2, N);
+  }
+
+  cout << S << endl;
 
   K = bigint("0x" + hex::encode(sha1(S).to_str()));
 
@@ -55,7 +61,16 @@ Client& Client::login() {
   return *this;
 }
 
-void Client::passwd() {
+Client& Client::passwd() {
   string hmac = hmac_sha256(K, salt);
   server->passwd(hmac);
+
+  return *this;
+}
+
+Client::Client(string _I, string _P) {
+  I = _I;
+  P = _P;
+  Client();
+
 }

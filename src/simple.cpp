@@ -32,7 +32,9 @@ int main() {
   Server server;
   Client client;
 
+  client.A = 0;
+
   client.connect(&server).login();
-  client.passwd();
+  cout << client.passwd().status << endl;
 
 }

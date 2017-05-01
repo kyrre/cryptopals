@@ -40,6 +40,7 @@ void Server::login(string& _I, cpp_int _A) {
   S = powm(A * tmp_1, b, N);
   K = bigint("0x" + hex::encode(sha1(S).to_str()));
 
+  cout << S << endl;
   client->set_param(salt, B);
 }
 
@@ -50,7 +51,9 @@ void Server::connect(Client* c) {
 void Server::passwd(const string& hmac) {
   string _hmac = hmac_sha256(K, salt);
   if(hmac == _hmac) {
-    cout << "OK" << endl;
+    client->status = "OK";
+  } else {
+    client->status = "ERROR";
   }
 }
 
