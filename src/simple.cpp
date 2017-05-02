@@ -25,15 +25,20 @@
 #include "bigint.h"
 #include "dh.h"
 #include "dh_message.h"
-#include "srp/client.h"
-#include "srp/server.h"
+
+#include "srp_simple/simple.h"
 
 int main() {
-  Server server;
-  Client client("email", "password", server.N);
 
+  Simple::Server server;
+  Simple::Client client("username", "password");
 
-  client.connect(&server).login();
-  cout << client.passwd().status << endl;
+  server.listen(&client);
+  // I, A = g**a % n
+  client.send_param();
+
+  // salt, B = g**b % n, u = 128 bit random number
+  server.send_param();
+
 
 }
