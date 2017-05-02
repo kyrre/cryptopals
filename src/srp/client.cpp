@@ -1,20 +1,18 @@
 #include <memory>
 
-#include "dh.h"
 #include "bigint.h"
+#include "dh.h"
 #include "hex.h"
 
 #include "picosha2.h"
 #include "srp/client.h"
 #include "srp/server.h"
 
-
 void Client::set_param(bigint _salt, bigint _B) {
   salt = _salt;
   B = _B;
 
-  string uH = picosha2::hash256_hex_string(
-      hex::decode(to_str(A) + to_str(B)));
+  string uH = picosha2::hash256_hex_string(hex::decode(to_str(A) + to_str(B)));
 
   u = bigint("0x" + uH);
 
@@ -24,8 +22,7 @@ void Client::set_param(bigint _salt, bigint _B) {
 
   v = powm(g, x, N);
 
-
-  //pow(B - k * pow(g, x, N), a + u * x, N)
+  // pow(B - k * pow(g, x, N), a + u * x, N)
   cpp_int tmp_1 = (B - k * v);
   bigint tmp_2 = (a + u * x) % N;
 
@@ -39,8 +36,6 @@ void Client::set_param(bigint _salt, bigint _B) {
   cout << S << endl;
 
   K = bigint("0x" + hex::encode(sha1(S).to_str()));
-
-
 }
 
 Client::Client() {
@@ -48,7 +43,7 @@ Client::Client() {
   A = powm(g, a, N);
 }
 
-Client& Client::connect(Server *s) {
+Client& Client::connect(Server* s) {
   server = s;
   server->connect(this);
 
@@ -57,7 +52,6 @@ Client& Client::connect(Server *s) {
 
 Client& Client::login() {
   server->login(I, A);
-
 
   return *this;
 }
@@ -85,9 +79,4 @@ Client::Client(string _I, string _P, bigint _N) {
 
   a = gen() % N;
   A = powm(g, a, N);
-
 }
-
-
-
-

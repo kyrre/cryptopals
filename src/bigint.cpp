@@ -5,12 +5,10 @@
 #include <boost/random.hpp>
 #include <boost/random/independent_bits.hpp>
 
-
-
 #include "bigint.h"
 #include "hex.h"
-#include "sha1.h"
 #include "picosha2.h"
+#include "sha1.h"
 
 string to_str(cpp_int i) {
   stringstream ss;
@@ -37,7 +35,6 @@ string sha256(const string& a) {
   return picosha2::hash256_hex_string(a);
 }
 
-
 string sha256(cpp_int a) {
   return sha256(hex::decode(to_str(a)).to_str());
 }
@@ -58,8 +55,5 @@ string hmac_sha256(bigint _key, bigint _message) {
   bytearray o_key_pad = bytearray(0x5c, block_size) ^ key;
   bytearray i_key_pad = bytearray(0x36, block_size) ^ key;
 
-  return sha256(o_key_pad.to_str() +
-                   sha256(i_key_pad.to_str() + message));
+  return sha256(o_key_pad.to_str() + sha256(i_key_pad.to_str() + message));
 }
-
-

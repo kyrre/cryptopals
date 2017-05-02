@@ -26,19 +26,4 @@
 #include "dh.h"
 #include "dh_message.h"
 
-#include "srp_simple/simple.h"
-
-int main() {
-
-  Simple::Server server;
-  Simple::Client client("username", "password");
-
-  server.listen(&client);
-  // I, A = g**a % n
-  client.send_param();
-
-  // salt, B = g**b % n, u = 128 bit random number
-  server.send_param();
-
-
-}
+int main() {}

@@ -4,6 +4,7 @@
 #include "utils.h"
 #include "dh_message.h"
 #include "dh.h"
+#include "srp_simple/simple.h"
 
 
 TEST_CASE("Diffie-Hellman") {
@@ -67,6 +68,25 @@ TEST_CASE("DH Chosen Group") {
 
   REQUIRE(mallory.recv(intercept) == message);
 
-
 }
 
+
+TEST_CASE("Simple SRP Dictionary Attack") {
+
+  Simple::Server server;
+  Simple::Client client("username", "passwor");
+
+  server.listen(&client);
+
+  // I, A = g**a % n
+  client.send_param();
+
+  // salt, B = g**b % n, u = 128 bit random number
+  server.send_param();
+
+   REQUIRE(client.send_hmac() == "ERROR");
+   REQUIRE(server.crack_hmac() == "passwor");
+
+
+
+}

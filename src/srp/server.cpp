@@ -23,7 +23,6 @@ Server::Server() {
 }
 
 void Server::login(string& _I, cpp_int _A) {
-
   A = _A;
 
   B = powm(g, b, N);
@@ -31,8 +30,7 @@ void Server::login(string& _I, cpp_int _A) {
 
   //(k * v + pow(g, b, N)) % N
 
-  string uH = picosha2::hash256_hex_string(
-      hex::decode(to_str(A) + to_str(B)));
+  string uH = picosha2::hash256_hex_string(hex::decode(to_str(A) + to_str(B)));
 
   u = bigint("0x" + uH) % N;
 
@@ -50,10 +48,9 @@ void Server::connect(Client* c) {
 
 void Server::passwd(const string& hmac) {
   string _hmac = hmac_sha256(K, salt);
-  if(hmac == _hmac) {
+  if (hmac == _hmac) {
     client->status = "OK";
   } else {
     client->status = "ERROR";
   }
 }
-

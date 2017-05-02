@@ -13,10 +13,10 @@ class Server : public CommonParameters {
   bigint salt;
   bigint v;
 
-  Client *client;
+  Client* client;
 
   Server();
   void login(string& _I, cpp_int _B);
-  void connect(Client *c);
+  void connect(Client* c);
   void passwd(const string& hmac);
 };
