@@ -50,7 +50,6 @@ TEST_CASE("DH Chosen Group") {
   NormalParticipant alice;
   NormalParticipant bob;
 
-
   MiddlemanGroup mallory(1);
 
   alice.connect(mallory);
@@ -84,9 +83,7 @@ TEST_CASE("Simple SRP Dictionary Attack") {
   // salt, B = g**b % n, u = 128 bit random number
   server.send_param();
 
-   REQUIRE(client.send_hmac() == "ERROR");
-   REQUIRE(server.crack_hmac() == "passwor");
-
-
+  REQUIRE(client.send_hmac() == "ERROR");
+  REQUIRE(server.crack_hmac() == "passwor");
 
 }

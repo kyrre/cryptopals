@@ -26,4 +26,11 @@
 #include "dh.h"
 #include "dh_message.h"
 
-int main() {}
+#include <openssl/bn.h>
+
+
+int main() {
+
+
+
+}
