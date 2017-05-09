@@ -28,11 +28,6 @@
 
 #include "dh.h"
 
+
 int main() {
-  rsa::RSA keys1;
-
-  string plaintext = "{\"name\":\"Tom\"}";
-  bigint C = keys1.encrypt(plaintext);
-
-  cout << no_padding_attack(C, keys1) << endl;
 }

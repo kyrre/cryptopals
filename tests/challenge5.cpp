@@ -126,3 +126,14 @@ TEST_CASE("RSA e=3") {
 
   REQUIRE(rsa::bigint_to_string(p) == plaintext);
 }
+
+TEST_CASE("No padding RSA") {
+
+  rsa::RSA keys1;
+
+  string plaintext = "{\"name\":\"Tom\"}";
+  bigint C = keys1.encrypt(plaintext);
+
+  REQUIRE(no_padding_attack(C, keys1) == plaintext);
+
+}
