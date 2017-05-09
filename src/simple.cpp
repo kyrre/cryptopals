@@ -15,6 +15,7 @@
 
 #include "methods/aes.h"
 #include "methods/padding.h"
+#include "methods/rsa.h"
 
 #include "oracle/aes.h"
 #include "oracle/profile.h"
@@ -23,14 +24,7 @@
 #include "sha1.h"
 
 #include "bigint.h"
-#include "dh.h"
-#include "dh_message.h"
-
-#include <openssl/bn.h>
 
 
 int main() {
-
-
-
 }

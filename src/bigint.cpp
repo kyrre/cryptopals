@@ -57,3 +57,67 @@ string hmac_sha256(bigint _key, bigint _message) {
 
   return sha256(o_key_pad.to_str() + sha256(i_key_pad.to_str() + message));
 }
+
+bigint string_to_bigint(const string& s) {
+  return bigint("0x" + hex::encode(s));
+}
+
+bigint invmod(bigint a, bigint b) {
+  bigint b0 = b, t, q;
+  bigint x0 = 0, x1 = 1;
+
+  if (b == 1) {
+    return 1;
+  }
+
+  while (a > 1) {
+    q = a / b;
+    t = b, b = a % b, a = t;
+    t = x0, x0 = x1 - q * x0, x1 = t;
+  }
+
+  if (x1 < 0) {
+    x1 += b0;
+  }
+
+  return x1;
+}
+
+bigint chinese_remainder(vector<bigint>& n, vector<bigint>& a) {
+  bigint p, prod = 1, sum = 0;
+
+  size_t i = 0;
+  for (i = 0; i < n.size(); i++) {
+    prod *= n[i];
+  }
+
+  for (i = 0; i < n.size(); i++) {
+    p = prod / n[i];
+    sum += a[i] * invmod(p, n[i]) * p;
+  }
+
+  return sum % prod;
+}
+
+bigint cube(bigint n) {
+  return n * n * n;
+}
+
+bigint cbrt(bigint n) {
+  bigint start = 0, end = n;
+
+  while (true) {
+    bigint mid = (start + end) / 2;
+    bigint c = cube(mid);
+
+    if (c == n) {
+      return mid;
+    }
+
+    if (c > n) {
+      end = mid;
+    } else {
+      start = mid;
+    }
+  }
+}

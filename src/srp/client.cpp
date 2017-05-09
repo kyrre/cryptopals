@@ -39,7 +39,7 @@ void Client::set_param(bigint _salt, bigint _B) {
 }
 
 Client::Client() {
-  a = gen() % N;
+  a = DiffieHellman::gen() % N;
   A = powm(g, a, N);
 }
 
@@ -67,7 +67,7 @@ Client::Client(string _I, string _P) {
   I = _I;
   P = _P;
 
-  a = gen() % N;
+  a = DiffieHellman::gen() % N;
   A = powm(g, a, N);
 }
 
@@ -77,6 +77,6 @@ Client::Client(string _I, string _P, bigint _N) {
   I = _I;
   P = _P;
 
-  a = gen() % N;
+  a = DiffieHellman::gen() % N;
   A = powm(g, a, N);
 }

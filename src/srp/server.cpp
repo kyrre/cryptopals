@@ -11,14 +11,14 @@
 #include "srp/server.h"
 
 Server::Server() {
-  salt = gen();
+  salt = DiffieHellman::gen();
 
   string xH = picosha2::hash256_hex_string(
       hex::decode(to_str(salt) + hex::encode(P)).to_str());
 
   x = cpp_int("0x" + xH);
 
-  b = gen() % N;
+  b = DiffieHellman::gen() % N;
   v = powm(g, x, N);
 }
 

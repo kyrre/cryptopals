@@ -29,7 +29,7 @@ class Participant {
   const size_t block_size = 16;
   virtual ~Participant() {}
   virtual void connect(Participant& p) = 0;
-  virtual void init(Participant& dest, const DH& params) = 0;
+  virtual void init(Participant& dest, const DiffieHellman::DH& params) = 0;
   virtual void respond(Participant& p) = 0;
   virtual bytearray recv(const Message& message) = 0;
   virtual Message send(const bytearray& text) = 0;
@@ -52,8 +52,8 @@ int Participant::participant_count = 0;
 
 class NormalParticipant : public Participant {
  public:
-  DH params;
-  DH remote;
+   DiffieHellman::DH params;
+   DiffieHellman::DH remote;
 
   cpp_int s;
 
@@ -65,8 +65,8 @@ class NormalParticipant : public Participant {
     dest.init(*this, params);
   }
 
-  void init(Participant& dest, const DH& _remote) override {
-    params = DH(_remote.p, _remote.g);
+  void init(Participant& dest, const DiffieHellman::DH& _remote) override {
+    params = DiffieHellman::DH(_remote.p, _remote.g);
     remote = _remote;
   }
 
@@ -94,9 +94,9 @@ class Middleman : public Participant {
   int id_1;
   int id_2;
 
-  DH params;
-  DH remote1;
-  DH remote2;
+  DiffieHellman::DH params;
+  DiffieHellman::DH remote1;
+  DiffieHellman::DH remote2;
 
   cpp_int s1;
   cpp_int s2;
@@ -104,13 +104,13 @@ class Middleman : public Participant {
   void connect(Participant& dest) override {
     id_2 = dest.id;
 
-    DH fake_params;
+    DiffieHellman::DH fake_params;
     fake_params.A = params.p;
 
     dest.init(*this, fake_params);
   }
 
-  void init(Participant& dest, const DH& new_params) override {
+  void init(Participant& dest, const DiffieHellman::DH& new_params) override {
     // the sentinel value can be refactored away
     if (uninit) {
       id_1 = dest.id;
@@ -125,7 +125,7 @@ class Middleman : public Participant {
   }
 
   void respond(Participant& dest) override {
-    DH fake_params;
+    DiffieHellman::DH fake_params;
     fake_params.A = params.p;
     dest.init(*this, fake_params);
   }
@@ -163,14 +163,14 @@ class MiddlemanGroup : public Middleman {
   void connect(Participant& dest) override {
     id_2 = dest.id;
 
-    DH fake_params = remote1;
+    DiffieHellman::DH fake_params = remote1;
     fake_params.g = fake_g;
 
     dest.init(*this, fake_params);
   }
 
   void respond(Participant& dest) override {
-    DH fake_params = remote2;
+    DiffieHellman::DH fake_params = remote2;
     fake_params.g = params.g;
 
     dest.init(*this, fake_params);

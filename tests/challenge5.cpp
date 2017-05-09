@@ -5,11 +5,12 @@
 #include "dh_message.h"
 #include "dh.h"
 #include "srp_simple/simple.h"
+#include "methods/rsa.h"
 
 
 TEST_CASE("Diffie-Hellman") {
-  DH param_1;
-  DH param_2;
+  DiffieHellman::DH param_1;
+  DiffieHellman::DH param_2;
 
   bigint s  = powm(param_2.A, param_1.a, param_1.p);
   bigint _s = powm(param_1.A, param_2.a, param_2.p);
@@ -86,4 +87,42 @@ TEST_CASE("Simple SRP Dictionary Attack") {
   REQUIRE(client.send_hmac() == "ERROR");
   REQUIRE(server.crack_hmac() == "passwor");
 
+}
+
+TEST_CASE("RSA") {
+
+  rsa::PrimeGenerator generator;
+
+
+  bigint p = generator();
+  bigint q = generator();
+  bigint n = p * q;
+
+  bigint et = (p - 1) * (q - 1);
+  bigint e = 3;
+  bigint d = invmod(e, et);
+
+  string plaintext = "test";
+  bigint c = rsa::encrypt(plaintext, e, n);
+  string pt = rsa::decrypt(c, d, n);
+
+}
+
+TEST_CASE("RSA e=3") {
+  rsa::RSA keys1;
+  rsa::RSA keys2;
+  rsa::RSA keys3;
+
+  string plaintext = "test";
+
+  bigint cipher_1 = keys1.encrypt(plaintext);
+  bigint cipher_2 = keys2.encrypt(plaintext);
+  bigint cipher_3 = keys3.encrypt(plaintext);
+
+  vector<bigint> n = {keys1.n, keys2.n, keys3.n};
+  vector<bigint> a = {cipher_1, cipher_2, cipher_3};
+
+  bigint p = cbrt(chinese_remainder(n, a));
+
+  REQUIRE(rsa::bigint_to_string(p) == plaintext);
 }

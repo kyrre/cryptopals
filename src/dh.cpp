@@ -5,9 +5,9 @@
 
 #include "dh.h"
 
-generator_type gen;
+DiffieHellman::generator_type DiffieHellman::gen;
 
-DH::DH(bigint _p, bigint _g) : p(_p), g(_g) {
-  a = gen() % _p;
+DiffieHellman::DH::DH(bigint _p, bigint _g) : p(_p), g(_g) {
+  a = DiffieHellman::gen() % _p;
   A = powm(_g, a, _p);
 }
