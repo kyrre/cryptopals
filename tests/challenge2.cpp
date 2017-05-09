@@ -1,14 +1,13 @@
 #include <catch.hpp>
 
-#include "fs.h"
-#include "utils.h"
+#include "analysis/aes.h"
 #include "bytearray.h"
+#include "fs.h"
+#include "methods/aes.h"
+#include "methods/padding.h"
 #include "oracle/aes.h"
 #include "oracle/profile.h"
-#include "methods/padding.h"
-#include "methods/aes.h"
-#include "analysis/aes.h"
-
+#include "utils.h"
 
 TEST_CASE("Task 9") {
   bytearray bytes("YELLOW SUBMARINE");
@@ -36,7 +35,6 @@ TEST_CASE("AES CBC MODE") {
 }
 
 TEST_CASE("AES CBC MODE ENCRYPT/DECRYPT") {
-
   const size_t block_size = 16;
   bytearray plaintext = oracle::aes::random_bytes(7);
   bytearray key = oracle::aes::random_aes_key();
@@ -54,7 +52,6 @@ TEST_CASE("Byte-at-a-time ECB (Simple)") {
   string s = read("../tests/data/regression_12.txt");
 
   REQUIRE(decrypt(encryption_oracle) == s);
-
 }
 
 TEST_CASE("Byte-at-a-time ECB (Harder)") {
@@ -66,7 +63,6 @@ TEST_CASE("Byte-at-a-time ECB (Harder)") {
   REQUIRE(decrypt_prepad(encryption_oracle_prepad) == s);
 }
 
-
 TEST_CASE("Profile") {
   using namespace aes;
   using namespace oracle::aes;
@@ -75,16 +71,13 @@ TEST_CASE("Profile") {
   string expected = "admin";
 
   REQUIRE(strip_pkcs(p.role) == expected);
-
 }
 
 TEST_CASE("Strip Padding") {
-
   bytearray one("ICE ICE BABY\x04\x04\x04\x04");
   string expected = "ICE ICE BABY";
 
   REQUIRE(strip_pkcs(one) == expected);
-
 }
 
 TEST_CASE("Bit Flipping CBC") {

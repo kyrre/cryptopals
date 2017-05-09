@@ -1,18 +1,17 @@
 #include <catch.hpp>
 
-#include "fs.h"
-#include "utils.h"
+#include "analysis/aes.h"
 #include "bytearray.h"
+#include "fs.h"
+#include "methods/aes.h"
+#include "methods/padding.h"
 #include "oracle/aes.h"
 #include "oracle/profile.h"
-#include "methods/padding.h"
-#include "methods/aes.h"
-#include "analysis/aes.h"
+#include "utils.h"
 
 #include "sha1.h"
 
 TEST_CASE("CTR edit") {
-
   using namespace oracle::aes;
 
   const bytearray ecb_key("YELLOW SUBMARINE");
@@ -26,11 +25,7 @@ TEST_CASE("CTR edit") {
   REQUIRE((ciphertext ^ keystream) == plaintext);
 }
 
-
-
-
 TEST_CASE("CTR Bit-flipping") {
-
   using namespace oracle::aes;
 
   string wanted = ";admin=true;";
@@ -48,13 +43,12 @@ TEST_CASE("CTR Bit-flipping") {
   REQUIRE(decrypt_oracle_ctr(new_message) == true);
 }
 
-
 TEST_CASE("IV=KEY") {
-
   using namespace oracle::aes;
 
   const size_t block_size = 16;
-  string chosen_plaintext = string(block_size, 'A') + string(block_size, 'B') + string(block_size, 'C');
+  string chosen_plaintext = string(block_size, 'A') + string(block_size, 'B') +
+                            string(block_size, 'C');
   bytearray cipher = encryption_oracle_cbc_same_iv(chosen_plaintext);
 
   bytearray modified = slice(cipher, 0, block_size);
@@ -65,15 +59,13 @@ TEST_CASE("IV=KEY") {
     check_message_compliance(modified);
   } catch (const exception& e) {
     string pt = e.what();
-     _key = slice(pt, 0, block_size) ^ slice(pt, 32, block_size);
-
+    _key = slice(pt, 0, block_size) ^ slice(pt, 32, block_size);
   }
 
   REQUIRE(_key == key);
 }
 
 TEST_CASE("MAC") {
-
   const string input = "abc";
   string mac = compute_mac_value(input);
 
@@ -81,22 +73,18 @@ TEST_CASE("MAC") {
 
   mac[1] ^= 0x5;
   REQUIRE(authenticate(input, mac) == false);
-
 }
 
-
 TEST_CASE("Challenge 29") {
-  const string original_message = "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%20bacon";
+  const string original_message =
+      "comment1=cooking%20MCs;userdata=foo;comment2=%20like%20a%20pound%20of%"
+      "20bacon";
   const string mac_value = compute_mac_value(original_message);
-
 
   auto k = forge_message(mac_value, original_message);
 
   string fake_message = k.first;
   string fake_mac = k.second;
 
-
   REQUIRE(authenticate(fake_message, fake_mac));
-
 }
-

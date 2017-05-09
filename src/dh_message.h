@@ -9,6 +9,7 @@
 
 #include "bigint.h"
 #include "dh.h"
+#include "utils.h"
 
 using namespace std;
 

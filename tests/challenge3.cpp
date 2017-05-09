@@ -1,20 +1,16 @@
 #include <catch.hpp>
 
-#include "fs.h"
-#include "utils.h"
+#include "analysis/aes.h"
 #include "bytearray.h"
+#include "fs.h"
+#include "methods/aes.h"
+#include "methods/padding.h"
 #include "oracle/aes.h"
 #include "oracle/profile.h"
-#include "methods/padding.h"
-#include "methods/aes.h"
-#include "analysis/aes.h"
-
+#include "utils.h"
 
 TEST_CASE("Task 17") {
-
-
   using namespace oracle::aes;
-
 
   bytearray message = bytearray(16, 'B');
   bytearray pt(16, 'A');
@@ -25,8 +21,4 @@ TEST_CASE("Task 17") {
   REQUIRE(cbc_attack_block(cipher, 1) == message);
 }
 
-
-TEST_CASE("Task 18") {
-
-
-}
+TEST_CASE("Task 18") {}

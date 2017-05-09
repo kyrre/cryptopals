@@ -1,26 +1,23 @@
 #include <catch.hpp>
 
 #include "bytearray.h"
-#include "utils.h"
-#include "dh_message.h"
 #include "dh.h"
-#include "srp_simple/simple.h"
+#include "dh_message.h"
 #include "methods/rsa.h"
-
+#include "srp_simple/simple.h"
+#include "utils.h"
 
 TEST_CASE("Diffie-Hellman") {
   DiffieHellman::DH param_1;
   DiffieHellman::DH param_2;
 
-  bigint s  = powm(param_2.A, param_1.a, param_1.p);
+  bigint s = powm(param_2.A, param_1.a, param_1.p);
   bigint _s = powm(param_1.A, param_2.a, param_2.p);
 
   REQUIRE(s == _s);
 }
 
-
 TEST_CASE("Diffie-Hellman MITM") {
-
   NormalParticipant alice;
   NormalParticipant bob;
   Middleman mallory;
@@ -43,9 +40,7 @@ TEST_CASE("Diffie-Hellman MITM") {
   bytearray recv_message = dest.recv(mallory.relay(intercept));
 
   REQUIRE(recv_message == message);
-
 }
-
 
 TEST_CASE("DH Chosen Group") {
   NormalParticipant alice;
@@ -67,12 +62,9 @@ TEST_CASE("DH Chosen Group") {
   Message intercept = src.send(message);
 
   REQUIRE(mallory.recv(intercept) == message);
-
 }
 
-
 TEST_CASE("Simple SRP Dictionary Attack") {
-
   Simple::Server server;
   Simple::Client client("username", "passwor");
 
@@ -86,13 +78,10 @@ TEST_CASE("Simple SRP Dictionary Attack") {
 
   REQUIRE(client.send_hmac() == "ERROR");
   REQUIRE(server.crack_hmac() == "passwor");
-
 }
 
 TEST_CASE("RSA") {
-
   rsa::PrimeGenerator generator;
-
 
   bigint p = generator();
   bigint q = generator();
@@ -105,7 +94,6 @@ TEST_CASE("RSA") {
   string plaintext = "test";
   bigint c = rsa::encrypt(plaintext, e, n);
   string pt = rsa::decrypt(c, d, n);
-
 }
 
 TEST_CASE("RSA e=3") {
@@ -128,12 +116,10 @@ TEST_CASE("RSA e=3") {
 }
 
 TEST_CASE("No padding RSA") {
-
   rsa::RSA keys1;
 
   string plaintext = "{\"name\":\"Tom\"}";
   bigint C = keys1.encrypt(plaintext);
 
   REQUIRE(no_padding_attack(C, keys1) == plaintext);
-
 }
