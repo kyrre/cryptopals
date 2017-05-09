@@ -3,8 +3,16 @@
 #include <openssl/bn.h>
 #include <openssl/rand.h>
 
+#include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
+
 #include "bigint.h"
+#include "dh.h"
 #include "hex.h"
+
+using namespace rapidjson;
+using namespace std;
 
 namespace rsa {
 
@@ -100,4 +108,56 @@ class RSA {
     return ::rsa::_decrypt(c, d, n);
   }
 };
+
+string stringify(const Document& d) {
+  StringBuffer buffer;
+  Writer<StringBuffer> writer(buffer);
+  d.Accept(writer);
+
+  return buffer.GetString();
+}
+
+Document parse(const string& json_str) {
+  Document d;
+  d.Parse(json_str.c_str());
+
+  return d;
+}
+
+class SomeServer {
+ public:
+  boost::hash<bigint> hasher;
+  set<size_t> hash_values;
+
+  rsa::RSA keys;
+
+  SomeServer(rsa::RSA _keys) : keys(_keys) {}
+
+  bigint decrypt(bigint cipher) {
+    size_t hash_value = hasher(cipher);
+    bool exists = hash_values.find(hash_value) != hash_values.end();
+
+    if (exists) {
+      throw std::overflow_error("Duplicate cipher!");
+    } else {
+      hash_values.insert(hash_value);
+      keys._decrypt(cipher);
+    }
+  }
+};
+
+string no_padding_attack(bigint C, rsa::RSA keys) {
+  bigint N = keys.n;
+  bigint E = keys.e;
+
+  bigint S = DiffieHellman::gen() % N;
+
+  bigint c_prime = powm(S, E, N);
+  c_prime = c_prime * C % N;
+
+  bigint S_inverse = invmod(S, N);
+  bigint P = keys._decrypt(c_prime) * S_inverse % N;
+
+  return rsa::bigint_to_string(P);
+}
 }
