@@ -52,8 +52,8 @@ int Participant::participant_count = 0;
 
 class NormalParticipant : public Participant {
  public:
-   DiffieHellman::DH params;
-   DiffieHellman::DH remote;
+  DiffieHellman::DH params;
+  DiffieHellman::DH remote;
 
   cpp_int s;
 

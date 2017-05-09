@@ -26,6 +26,10 @@ hunter_add_package(Boost)
 hunter_add_package(OpenSSL)
 hunter_add_package(Boost COMPONENTS system filesystem)
 hunter_add_package(CURL)
+hunter_add_package(RapidJSON)
+
+
+
 
 
 
@@ -38,6 +42,10 @@ find_package(fmt CONFIG REQUIRED)
 find_package(Boost CONFIG REQUIRED system)
 find_package(OpenSSL REQUIRED)
 find_package(CURL CONFIG REQUIRED)
+find_package(RapidJSON CONFIG REQUIRED)
+
+
+
 
 
 
@@ -70,7 +78,7 @@ set(AES
 
 # Targets
 add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE} ${SRP})
-target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl)
+target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl RapidJSON::rapidjson)
 
 add_executable(server src/server.cpp src/bytearray.cpp src/sha1.cpp src/hex.cpp)
 target_link_libraries(server PUBLIC fmt Boost::system Threads::Threads)

@@ -95,5 +95,9 @@ class RSA {
   string decrypt(bigint c) {
     return ::rsa::decrypt(c, d, n);
   }
+
+  bigint _decrypt(bigint c) {
+    return ::rsa::_decrypt(c, d, n);
+  }
 };
 }
