@@ -54,6 +54,7 @@ bigint _decrypt(bigint c, bigint d, bigint n) {
   return m;
 }
 
+
 string bigint_to_string(bigint a) {
   string out;
   stringstream ss;
@@ -141,7 +142,7 @@ class SomeServer {
       throw std::overflow_error("Duplicate cipher!");
     } else {
       hash_values.insert(hash_value);
-      keys._decrypt(cipher);
+      return keys._decrypt(cipher);
     }
   }
 };

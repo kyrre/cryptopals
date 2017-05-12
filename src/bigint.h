@@ -23,3 +23,5 @@ bigint invmod(bigint a, bigint b);
 bigint chinese_remainder(vector<bigint>& n, vector<bigint>& a);
 bigint cube(bigint n);
 bigint cbrt(bigint n);
+pair<bigint, bool> cbrt_close(bigint n);
+

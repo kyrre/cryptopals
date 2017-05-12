@@ -94,6 +94,8 @@ TEST_CASE("RSA") {
   string plaintext = "test";
   bigint c = rsa::encrypt(plaintext, e, n);
   string pt = rsa::decrypt(c, d, n);
+
+  REQUIRE(plaintext == pt);
 }
 
 TEST_CASE("RSA e=3") {

@@ -106,9 +106,16 @@ bigint cube(bigint n) {
 bigint cbrt(bigint n) {
   bigint start = 0, end = n;
 
+  bigint last = 0;
   while (true) {
     bigint mid = (start + end) / 2;
     bigint c = cube(mid);
+
+    if (mid == last) {
+      return 0;
+    } else {
+      last = mid;
+    }
 
     if (c == n) {
       return mid;
@@ -121,3 +128,30 @@ bigint cbrt(bigint n) {
     }
   }
 }
+
+pair<bigint, bool> cbrt_close(bigint n) {
+  bigint start = 0, end = n;
+
+  bigint last = 0;
+  while (true) {
+    bigint mid = (start + end) / 2;
+    bigint c = cube(mid);
+
+    if (mid == last) {
+      return make_pair(mid, false);
+    } else {
+      last = mid;
+    }
+
+    if (c == n) {
+      return make_pair(mid, true);
+    }
+
+    if (c > n) {
+      end = mid;
+    } else {
+      start = mid;
+    }
+  }
+}
+
