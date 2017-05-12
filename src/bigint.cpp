@@ -58,6 +58,7 @@ string hmac_sha256(bigint _key, bigint _message) {
   return sha256(o_key_pad.to_str() + sha256(i_key_pad.to_str() + message));
 }
 
+// skal det vaere encode her!?
 bigint string_to_bigint(const string& s) {
   return bigint("0x" + hex::encode(s));
 }

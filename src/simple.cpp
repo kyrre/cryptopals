@@ -59,15 +59,17 @@ bigint create_fake_block(const string& message) {
 
     string fake_block = "0001ff003021300906052b0e03021a05000414" + hex::encode(sha1(message).to_str());
     fake_block = fake_block + string(128UL - fake_block.size(), '0');
-    fake_block = hex::decode(fake_block).to_str();
+    bigint s("0x" + fake_block);
 
-    bigint s = string_to_bigint(fake_block);
+    cout << std::hex << s << endl;
+
     auto status = cbrt_close(s);
     if (!status.second ) {
       s = s + (cube(status.first) - s);
     } 
 
     return s;
+
 }
 
 int main() {
@@ -76,12 +78,13 @@ int main() {
 
   const string message = "hi mom";;
   string block = hex::encode(create_block(message).to_str());
+
   bigint sig = key.encrypt(block);
   string pt = key.decrypt(sig);
 
-
   bigint fake = create_fake_block(message);
 
-  cout << key.decrypt(fake) << endl;
+  cout << to_str(cube(fake)) << endl;
+  cout << key.decrypt(sig) << endl;
 
 }
