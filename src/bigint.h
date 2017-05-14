@@ -24,4 +24,4 @@ bigint chinese_remainder(vector<bigint>& n, vector<bigint>& a);
 bigint cube(bigint n);
 bigint cbrt(bigint n);
 pair<bigint, bool> cbrt_close(bigint n);
-
+string sha256(const string& a);

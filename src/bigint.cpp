@@ -155,4 +155,3 @@ pair<bigint, bool> cbrt_close(bigint n) {
     }
   }
 }
-
