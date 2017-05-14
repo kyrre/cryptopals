@@ -1,5 +1,6 @@
 #include <sstream>
 #include <string>
+#include <algorithm>
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/random.hpp>
@@ -12,10 +13,13 @@
 
 string to_str(cpp_int i) {
   stringstream ss;
-  ss << i;
+  ss << std::hex << i;
 
   string ret;
   ss >> ret;
+
+  std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
+
 
   return ret;
 }
