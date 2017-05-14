@@ -10,7 +10,6 @@
 #include <thread>
 #include <unordered_map>
 
-#include "fs.h"
 
 #include "analysis/aes.h"
 #include "analysis/frequency.h"
@@ -23,11 +22,12 @@
 #include "oracle/aes.h"
 #include "oracle/profile.h"
 
+#include "fs.h"
+#include "dh.h"
+
 #include "hex.h"
 #include "sha1.h"
-
 #include "bigint.h"
-#include "dh.h"
 
 
 
