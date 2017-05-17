@@ -54,7 +54,6 @@ bigint _decrypt(bigint c, bigint d, bigint n) {
   return m;
 }
 
-
 string bigint_to_string(bigint a) {
   string out;
   stringstream ss;

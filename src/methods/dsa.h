@@ -3,18 +3,16 @@
 #include "bigint.h"
 #include "dh.h"
 
-
 namespace cryptopals {
 string sha2_trunc(const string& m) {
   return sha256(m).substr(0, 40);
 }
 
-
 class Signature {
-  public: 
-    bigint r;
-    bigint s;
-    Signature(bigint r, bigint s) : r{r}, s{s} {}
+ public:
+  bigint r;
+  bigint s;
+  Signature(bigint r, bigint s) : r{r}, s{s} {}
 };
 
 class DSA {
@@ -45,7 +43,6 @@ class DSA {
   }
 
   Signature sign(const string& message, bigint H) {
-
     bigint k = DiffieHellman::gen() % q;
 
     bigint r = powm(g, k, p);
@@ -84,15 +81,13 @@ class DSA {
 
     return (subm(s * k, H, q) * r_inv) % q;
   }
-
-
 };
 
-  string parse_line(const string& line) {
+string parse_line(const string& line) {
   vector<string> tokens;
   boost::split(tokens, line, boost::is_any_of(":"));
 
-  string data = tokens[1].substr(1, tokens[1].size()- 1);
+  string data = tokens[1].substr(1, tokens[1].size() - 1);
 
   return data;
 }
@@ -103,16 +98,11 @@ class SignedMessage {
   bigint m;
   string message;
 
-  SignedMessage(Signature sig,
-                bigint m,
-                const string& message)
+  SignedMessage(Signature sig, bigint m, const string& message)
       : sig{sig}, m{m}, message{message} {}
-
 };
 
-
 bigint recover(SignedMessage a, SignedMessage b, bigint q) {
-
   bigint m1 = a.m;
   bigint m2 = b.m;
 
@@ -125,10 +115,4 @@ bigint recover(SignedMessage a, SignedMessage b, bigint q) {
 
   return k;
 }
-
-
-
-
 }
-
-

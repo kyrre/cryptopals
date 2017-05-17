@@ -31,6 +31,5 @@
 #include "sha1.h"
 
 int main() {
-
-    return 0;
+  return 0;
 }
