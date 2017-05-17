@@ -18,12 +18,12 @@ void Client::set_param(bigint _salt, bigint _B) {
 
   string xH = picosha2::hash256_hex_string(
       hex::decode(to_str(salt) + hex::encode(P)).to_str());
-  x = cpp_int("0x" + xH);
+  x = bigint("0x" + xH);
 
   v = powm(g, x, N);
 
   // pow(B - k * pow(g, x, N), a + u * x, N)
-  cpp_int tmp_1 = (B - k * v);
+  bigint tmp_1 = (B - k * v);
   bigint tmp_2 = (a + u * x) % N;
 
   cout << A << endl;

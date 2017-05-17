@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bigint.h"
+#include "dh.h"
 
 
 namespace cryptopals {
@@ -8,7 +9,13 @@ string sha2_trunc(const string& m) {
   return sha256(m).substr(0, 40);
 }
 
-using Signature = pair<bigint, bigint>;
+
+class Signature {
+  public: 
+    bigint r;
+    bigint s;
+    Signature(bigint r, bigint s) : r{r}, s{s} {}
+};
 
 class DSA {
  public:
@@ -37,7 +44,7 @@ class DSA {
     y = powm(g, x, p);
   }
 
-  pair<bigint, bigint> sign(const string& message, bigint H) {
+  Signature sign(const string& message, bigint H) {
 
     bigint k = DiffieHellman::gen() % q;
 
@@ -47,12 +54,12 @@ class DSA {
     bigint inv_k = invmod(k, q);
     bigint s = (inv_k * (H + x * r)) % q;
 
-    return make_pair(r, s);
+    return Signature(r, s);
   }
 
-  bool validate(pair<bigint, bigint> sig, bigint H) {
-    bigint r = sig.first;
-    bigint s = sig.second;
+  bool validate(Signature& sig, bigint H) {
+    bigint r = sig.r;
+    bigint s = sig.s;
 
     if (r > q && s > q) {
       return false;
@@ -71,11 +78,57 @@ class DSA {
   }
 
   bigint recover(Signature sig, bigint k, bigint H) {
-    bigint r = sig.first;
-    bigint s = sig.second;
+    bigint r = sig.r;
+    bigint s = sig.s;
     bigint r_inv = invmod(r, q);
 
-    return ((s * k - H) * r_inv) % q;
+    return (subm(s * k, H, q) * r_inv) % q;
   }
+
+
 };
+
+  string parse_line(const string& line) {
+  vector<string> tokens;
+  boost::split(tokens, line, boost::is_any_of(":"));
+
+  string data = tokens[1].substr(1, tokens[1].size()- 1);
+
+  return data;
 }
+
+class SignedMessage {
+ public:
+  Signature sig;
+  bigint m;
+  string message;
+
+  SignedMessage(Signature sig,
+                bigint m,
+                const string& message)
+      : sig{sig}, m{m}, message{message} {}
+
+};
+
+
+bigint recover(SignedMessage a, SignedMessage b, bigint q) {
+
+  bigint m1 = a.m;
+  bigint m2 = b.m;
+
+  bigint s1 = a.sig.s;
+  bigint s2 = b.sig.s;
+
+  bigint tmp1 = subm(m1, m2, q);
+  bigint tmp2 = invmod(subm(s1, s2, q), q);
+  bigint k = (tmp1 * tmp2) % q;
+
+  return k;
+}
+
+
+
+
+}
+
+

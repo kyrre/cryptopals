@@ -16,7 +16,7 @@ class Server : public CommonParameters {
   Client* client;
 
   Server();
-  void login(string& _I, cpp_int _B);
+  void login(string& _I, bigint _B);
   void connect(Client* c);
   void passwd(const string& hmac);
 };

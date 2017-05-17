@@ -1,4 +1,5 @@
 #include <catch.hpp>
+#include <fstream>
 
 #include "bytearray.h"
 #include "dh.h"
@@ -28,8 +29,7 @@ TEST_CASE("DSA known nonce") {
       "For those that envy a MC it can be hazardous to your health\n"
       "So be friendly, a matter of life and death, just like a etch-a-sketch\n";
 
-  cryptopals::Signature signature =
-      make_pair(bigint("0x60019cacdc56eedf8e080984bfa898c8c5c419a8"),
+  cryptopals::Signature signature(bigint("0x60019cacdc56eedf8e080984bfa898c8c5c419a8"),
                 bigint("0x961f2062efc3c68db965a90c924cf76580ec1bbc"));
 
   bigint y(
@@ -48,7 +48,7 @@ TEST_CASE("DSA known nonce") {
   REQUIRE(unknown.validate(signature, hash_value + 1) == false);
 
   pair<bigint, bigint> values;
-  string fingerprint = "0954edd5e0afe5542a4adf012611a91912a3ec16";
+  const string fingerprint = "0954EDD5E0AFE5542A4ADF012611A91912A3EC16";
   for (bigint k = 0; k <= bigint(0xffff); ++k) {
     bigint x = unknown.recover(signature, k, hash_value);
 
@@ -57,7 +57,6 @@ TEST_CASE("DSA known nonce") {
     }
 
     string fp = hex::encode(sha1(to_str(x)).to_str());
-    std::transform(fp.begin(), fp.end(), fp.begin(), ::tolower);
 
     if (fingerprint == fp) {
       values = make_pair(x, k);
@@ -66,4 +65,67 @@ TEST_CASE("DSA known nonce") {
   }
 
   REQUIRE(bigint("0x15FB2873D16B3E129FF76D0918FD7ADA54659E49") == values.first);
+}
+
+TEST_CASE("Repeated nonce") {
+
+  const string filename = "../tests/data/44.txt";
+  vector<cryptopals::SignedMessage> messages;
+
+  ifstream iss(filename);
+  for (string line; getline(iss, line);) {
+    string msg = cryptopals::parse_line(line);
+
+    getline(iss, line);
+    bigint s(cryptopals::parse_line(line));
+
+    getline(iss, line);
+    bigint r(cryptopals::parse_line(line));
+
+
+    cryptopals::Signature sig(r, s);
+
+    getline(iss, line);
+    bigint m("0x" + cryptopals::parse_line(line));
+
+
+    messages.push_back(cryptopals::SignedMessage(sig, m, msg));
+  }
+
+  bigint y(
+      "0x2d026f4bf30195ede3a088da85e398ef869611d0f68f07"
+      "13d51c9c1a3a26c95105d915e2d8cdf26d056b86b8a7b8"
+      "5519b1c23cc3ecdc6062650462e3063bd179c2a6581519"
+      "f674a61f1d89a1fff27171ebc1b93d4dc57bceb7ae2430"
+      "f98a6a4d83d8279ee65d71c1203d2c96d65ebbf7cce9d3"
+      "2971c3de5084cce04a2e147821");
+
+  cryptopals::DSA dsa;
+  dsa.y = y;
+
+  string match;
+  for (size_t i = 0; i < messages.size(); ++i) {
+    for(size_t j = i+1; j < messages.size(); ++j) {
+
+      const cryptopals::SignedMessage a = messages[i];
+      const cryptopals::SignedMessage b = messages[j];
+
+
+      // check for repeated nonce
+      if (a.sig.r != b.sig.r) {
+        continue;
+      }
+
+      bigint k = recover(a, b, dsa.q);
+      bigint x = dsa.recover(a.sig, k, a.m);
+
+      if (powm(dsa.g, x, dsa.p) == y) {
+        match = hex::encode(sha1(to_str(x)).to_str());
+        continue;
+      }
+    }
+  }
+
+  assert(match == "CA8F6F7C66FA362D40760D135B763EB8527D3D52");
+
 }

@@ -5,11 +5,12 @@
 #include <boost/random/independent_bits.hpp>
 #include <random>
 
+#include "bigint.h"
+
 namespace DiffieHellman {
 
 using namespace boost::multiprecision;
 
-using bigint = cpp_int;
 using generator_type =
     boost::random::independent_bits_engine<std::mt19937, 256, bigint>;
 

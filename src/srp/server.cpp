@@ -16,13 +16,13 @@ Server::Server() {
   string xH = picosha2::hash256_hex_string(
       hex::decode(to_str(salt) + hex::encode(P)).to_str());
 
-  x = cpp_int("0x" + xH);
+  x = bigint("0x" + xH);
 
   b = DiffieHellman::gen() % N;
   v = powm(g, x, N);
 }
 
-void Server::login(string& _I, cpp_int _A) {
+void Server::login(string& _I, bigint _A) {
   A = _A;
 
   B = powm(g, b, N);

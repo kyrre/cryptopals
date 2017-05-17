@@ -39,7 +39,7 @@ class Participant {
     id = participant_count++;
   }
 
-  Message build_message(cpp_int s, const bytearray& text) {
+  Message build_message(bigint s, const bytearray& text) {
     bytearray key = slice(sha1(s), 0, block_size);
     bytearray iv = oracle::aes::random_bytes(block_size);
     bytearray cipher = aes_cbc_encrypt(text, key, block_size, iv);
@@ -56,7 +56,7 @@ class NormalParticipant : public Participant {
   DiffieHellman::DH params;
   DiffieHellman::DH remote;
 
-  cpp_int s;
+  bigint s;
 
   void connect(Participant& dest) override {
     dest.init(*this, params);
@@ -99,8 +99,8 @@ class Middleman : public Participant {
   DiffieHellman::DH remote1;
   DiffieHellman::DH remote2;
 
-  cpp_int s1;
-  cpp_int s2;
+  bigint s1;
+  bigint s2;
 
   void connect(Participant& dest) override {
     id_2 = dest.id;
@@ -157,9 +157,9 @@ class Middleman : public Participant {
 
 class MiddlemanGroup : public Middleman {
  public:
-  cpp_int fake_g;
+  bigint fake_g;
 
-  MiddlemanGroup(cpp_int g = 1) : fake_g(g) {}
+  MiddlemanGroup(bigint g = 1) : fake_g(g) {}
 
   void connect(Participant& dest) override {
     id_2 = dest.id;
@@ -177,7 +177,7 @@ class MiddlemanGroup : public Middleman {
     dest.init(*this, fake_params);
   }
 
-  cpp_int reconstruct_key() {
+  bigint reconstruct_key() {
     s1 = 1;
 
     if (fake_g == 1) {

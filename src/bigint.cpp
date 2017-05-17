@@ -1,6 +1,6 @@
+#include <algorithm>
 #include <sstream>
 #include <string>
-#include <algorithm>
 
 #include <boost/multiprecision/cpp_int.hpp>
 #include <boost/random.hpp>
@@ -11,7 +11,7 @@
 #include "picosha2.h"
 #include "sha1.h"
 
-string to_str(cpp_int i) {
+string to_str(bigint i) {
   stringstream ss;
   ss << std::hex << i;
 
@@ -19,7 +19,6 @@ string to_str(cpp_int i) {
   ss >> ret;
 
   std::transform(ret.begin(), ret.end(), ret.begin(), ::tolower);
-
 
   return ret;
 }
@@ -31,7 +30,7 @@ bytearray sha1(const string& s) {
   return hex::decode(h.final());
 }
 
-bytearray sha1(cpp_int i) {
+bytearray sha1(bigint i) {
   return sha1(to_str(i));
 }
 
@@ -39,7 +38,7 @@ string sha256(const string& a) {
   return picosha2::hash256_hex_string(a);
 }
 
-string sha256(cpp_int a) {
+string sha256(bigint a) {
   return sha256(hex::decode(to_str(a)).to_str());
 }
 
@@ -158,4 +157,15 @@ pair<bigint, bool> cbrt_close(bigint n) {
       start = mid;
     }
   }
+}
+
+bigint subm(bigint a, bigint b, bigint m) {
+  bigint r = (a - b);
+
+  if (r < 0) {
+    r = m - r;
+  }
+
+  r = r % m;
+  return r;
 }
