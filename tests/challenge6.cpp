@@ -129,3 +129,30 @@ TEST_CASE("Repeated nonce") {
   assert(match == "CA8F6F7C66FA362D40760D135B763EB8527D3D52");
 
 }
+
+TEST_CASE("Parameter tampering") {
+
+  string message = "test";
+  cryptopals::DSA dsa;
+  dsa.g = 0;
+
+  bigint H = string_to_bigint(cryptopals::sha2_trunc(message));
+
+  cryptopals::Signature sig = dsa.sign(message, H);
+  REQUIRE(dsa.validate(sig, H) == true);
+
+
+  bigint broken = string_to_bigint(cryptopals::sha2_trunc("test2"));
+  REQUIRE(dsa.validate(sig, broken) == true);
+
+  dsa.g = dsa.p + 1;
+  sig = dsa.sign(message, H);
+
+  cryptopals::Signature fake_sig = generate_signature(dsa);
+
+  assert(dsa.validate(fake_sig, H) == true);
+
+
+
+
+}
