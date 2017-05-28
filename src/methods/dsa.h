@@ -81,9 +81,6 @@ class DSA {
 
     return (subm(s * k, H, q) * r_inv) % q;
   }
-
-
-
 };
 
 Signature generate_signature(DSA& dsa, bigint z = 10) {
@@ -94,7 +91,6 @@ Signature generate_signature(DSA& dsa, bigint z = 10) {
   s = (s * r) % dsa.q;
 
   return Signature(r, s);
-
 }
 
 string parse_line(const string& line) {

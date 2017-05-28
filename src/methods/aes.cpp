@@ -69,7 +69,7 @@ bytearray aes_cbc_decrypt(const bytearray& cipher,
                           bytearray iv) {
   bytearray plaintext;
 
-  bytearray& prev_block = iv;
+  bytearray prev_block = iv;
   for (auto& block : chunk(cipher, block_size)) {
     plaintext = plaintext + (aes_decrypt_block(block, key) ^ prev_block);
 
@@ -86,7 +86,7 @@ bytearray aes_cbc_encrypt(const bytearray& plaintext,
   assert(block_size == iv.size());
 
   bytearray cipher;
-  bytearray& prev_block = iv;
+  bytearray prev_block = iv;
   for (auto& block : chunk(pkcs(plaintext), block_size)) {
     prev_block = aes_encrypt_block(block ^ prev_block, key);
     cipher = cipher + prev_block;

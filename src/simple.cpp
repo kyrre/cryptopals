@@ -5,13 +5,13 @@
 #include <streambuf>
 
 #include <algorithm>
+#include <cmath>
 #include <iostream>
 #include <memory>
 #include <random>
 #include <set>
 #include <thread>
 #include <unordered_map>
-#include <cmath>
 
 #include "analysis/aes.h"
 #include "analysis/frequency.h"
@@ -31,48 +31,144 @@
 #include "hex.h"
 #include "sha1.h"
 
+#include <boost/format.hpp>
 #include <cppcodec/base64_default_rfc4648.hpp>
 
-bool parity(bigint c, rsa::RSA& keys) {
-  bigint pt = keys._decrypt(c);
-  return ((pt % 2) == 0);
+bytearray cbc_mac(const bytearray& plaintext,
+                  const bytearray& key,
+                  const bytearray& IV,
+                  const size_t block_size = 16) {
+  bytearray cipher = aes_cbc_encrypt(plaintext, key, block_size, IV);
+  vector<bytearray> blocks = chunk(cipher, block_size);
+  bytearray last_block = blocks.back();
+
+  return last_block;
+}
+
+class SharedParameters {
+ public:
+  const bytearray key = bytearray("YELLOW SUBMARINE");
+  const size_t block_size = 16;
+};
+
+class BankServer : public SharedParameters {
+ public:
+  bool handle_request(bytearray& request) {
+    size_t req_length = request.size();
+
+    bytearray message = slice(request, 0, request.size() - 2 * block_size);
+    bytearray IV = slice(request, message.size(), block_size);
+    bytearray mac = slice(request, message.size() + block_size, block_size);
+
+    bytearray real_mac = cbc_mac(message, key, IV);
+    bool valid_mac = real_mac == mac;
+
+    return valid_mac;
+  }
+};
+
+class BankClient : public SharedParameters {
+ public:
+  bytearray build_message(const string from_id,
+                          const string to_id,
+                          const string amount) {
+    auto fmt =
+        boost::format("from=%1%&to=%2%&amount=%3%") % from_id % to_id % amount;
+    return fmt.str();
+  }
+
+  bytearray build_request(const bytearray& message,
+                          const bytearray& IV = bytearray(16, 0x00)) {
+    bytearray req = message;
+    req = req + IV;
+    req = req + cbc_mac(message, key, IV);
+
+    return req;
+  }
+};
+
+class BankClientMultipleTransactions : public SharedParameters {
+ public:
+
+
+  string build_transaction_list(const map<string, string>& transactions) {
+
+    string ret;
+    int num_tx = 0;
+    for (auto& kv : transactions) {
+        if (num_tx != 0) {
+          ret += ";";
+        }
+
+        ret += kv.first + ":" + kv.second;
+
+        ++num_tx;
+    }
+
+    return ret;
+  }
+
+  bytearray build_message(const string from_id,
+                          const map<string, string>& transactions) {
+
+
+    auto tx_list = build_transaction_list(transactions);
+    auto fmt =
+        boost::format("from=%1%&tx_list=%2%") % from_id % tx_list;
+    return fmt.str();
+  }
+
+  bytearray build_request(const bytearray& message,
+                          const bytearray& IV = bytearray(16, 0x00)) {
+    bytearray req = message;
+    req = req + IV;
+    req = req + cbc_mac(message, key, IV);
+
+    return req;
+  }
+};
+
+bool forge_attack() {
+  const size_t block_size = 16;
+  bytearray IV(16, 0x00);
+
+  BankServer server;
+  BankClient client;
+
+  // transfer 1M between your own accounts
+  auto message = client.build_message("m", "m", "1M");
+  auto request = client.build_request(message, IV);
+
+  const size_t m_size = request.size() - 2 * block_size;
+  bytearray mac = slice(request, m_size + block_size, block_size);
+
+  bytearray altered_message = client.build_message("a", "m", "1M");
+  IV[5] ^= 'm' ^ 'a';
+
+  bytearray forged = altered_message;
+  forged = forged + IV;
+  forged = forged + mac;
+
+  return server.handle_request(forged);
 }
 
 int main() {
+  assert(forge_attack);
 
-  rsa::RSA keys;
+  const size_t block_size = 16;
+  bytearray IV(16, 0x00);
 
-  const string data = "VGhhdCdzIHdoeSBJIGZvdW5kIHlvdSBkb24ndCBwbGF5IGFyb3VuZCB3aXRoIHRoZSBGdW5reSBDb2xkIE1lZGluYQ==";
-  const string plaintext = bytearray(base64::decode(data)).to_str();
+  BankServer server;
+  BankClientMultipleTransactions client;
 
-  const bigint cipher = keys.encrypt(plaintext);
-  const bigint n = keys.n;
-  const bigint e = keys.e;
-  const bigint tmp = powm(bigint(2), e, n);
+  map<string, string> tx_list = {
+    {"a", "5"}
+  };
 
-  bigint c = cipher;
+  auto message = client.build_message("m", tx_list);
 
-
-  bigint start = 0;
-  bigint stop = n;
-
+  cout << message << endl;
 
 
-  bigint real_pt_expected = string_to_bigint(plaintext);
-
-  while(start != stop) {
-    c = c * tmp % n;
-    bool even = parity(c, keys);
-
-    if (even) {
-      stop = (start + stop) / 2;
-    } else {
-      start = (start + stop) /  2;
-    }
-  }
-
-  string pt = hex::decode(to_str(stop)).to_str();
-
-  assert(pt == plaintext);
   return 0;
 }

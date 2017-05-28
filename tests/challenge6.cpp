@@ -150,8 +150,10 @@ TEST_CASE("Parameter tampering") {
 
   cryptopals::Signature fake_sig = generate_signature(dsa);
 
-  assert(dsa.validate(fake_sig, H) == true);
+  REQUIRE(dsa.validate(fake_sig, H) == true);
+}
 
+TEST_CASE("Parity Oracle") {
 
 
 
