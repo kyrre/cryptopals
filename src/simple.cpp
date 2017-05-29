@@ -162,13 +162,47 @@ int main() {
   BankClientMultipleTransactions client;
 
   map<string, string> tx_list = {
-    {"a", "5"}
+    {"a", "5"},
+    {"b", "6"},
+    {"c", "8"},
+    {"daa", "5"},
   };
 
+
   auto message = client.build_message("m", tx_list);
+  auto request = client.build_request(message, IV);
+
 
   cout << message << endl;
+  cout << message.size() << endl;
 
+  assert(server.handle_request(request));
+
+  const size_t m_size = request.size() - 2 * block_size;
+  bytearray mac = slice(request, message.size() + block_size, block_size);
+
+  bytearray appendix(";a:1M&g=" + string(8, 'A'));
+  assert(appendix.size() == block_size);
+
+  bytearray mod = mac ^ appendix;
+  auto new_mac = cbc_mac(mod, client.key, IV);
+
+
+  assert(new_mac.size() == block_size);
+
+
+  bytearray new_message = message + appendix;
+  bytearray new_request = new_message;
+  new_request = new_request + IV;
+  new_request = new_request + new_mac;
+
+
+  cout << new_message << endl;
+  cout << new_mac << endl;
+  cout << cbc_mac(new_message, client.key, IV) << endl;
+
+
+  assert(server.handle_request(new_request));
 
   return 0;
 }
