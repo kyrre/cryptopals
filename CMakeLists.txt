@@ -33,6 +33,7 @@ hunter_add_package(RapidJSON)
 
 
 
+
 find_package(Threads REQUIRED)
 
 # Find dependencies
@@ -45,6 +46,7 @@ find_package(CURL CONFIG REQUIRED)
 find_package(RapidJSON CONFIG REQUIRED)
 
 
+find_package( ZLIB REQUIRED )
 
 
 
@@ -63,6 +65,7 @@ set(BYTE
   src/sha1.cpp
   src/bigint.cpp
   src/dh.cpp
+  src/mac.cpp
   )
 
 set(SRP
@@ -78,7 +81,13 @@ set(AES
 
 # Targets
 add_executable(simple src/simple.cpp src/hist.cpp ${AES} ${BYTE} ${SRP})
-target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl RapidJSON::rapidjson)
+
+if ( ZLIB_FOUND )
+	include_directories(${ZLIB_INCLUDE_DIRS})
+	target_link_libraries(simple PUBLIC cxxopts::cxxopts fmt Boost::boost OpenSSL::SSL OpenSSL::Crypto Boost::system Threads::Threads PRIVATE CURL::libcurl RapidJSON::rapidjson ${ZLIB_LIBRARIES})
+
+endif( ZLIB_FOUND )
+
 
 add_executable(server src/server.cpp src/bytearray.cpp src/sha1.cpp src/hex.cpp)
 target_link_libraries(server PUBLIC fmt Boost::system Threads::Threads)
