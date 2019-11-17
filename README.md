@@ -1,3 +1,3 @@
 # cryptopals
 
-an attempt to learn c++
+most of the cryptopals challenges. 
